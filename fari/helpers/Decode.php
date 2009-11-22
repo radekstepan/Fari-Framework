@@ -2,7 +2,7 @@
 
 /**
  * Decoding of input to output.
- * 
+ *
  * @author Radek Stepan <radek.stepan@gmail.com>
  * @license http://www.opensource.org/licenses/mit-license.php The MIT License
  *
@@ -10,34 +10,54 @@
  */
 
 class Fari_Decode {
-	
+
 	/**
 	 * Returns a class description.
 	 *
 	 * @return string
 	 */
 	public static function _desc() { return 'Decoding to output'; }
-	
+
 	/**
 	 * Use in HTML context.
-	 * 
+	 *
 	 * @param string $input
 	 * @return string
 	 */
 	public static function html($input) {
 		return html_entity_decode($input, ENV_QUOTES, 'UTF-8');
 	}
-	
+
+    /**
+	 * Use on form data submitted via JavaScript (weierophinney.net).
+	 *
+	 * @param array/string $input
+	 * @return array/String Decoded accents etc.
+	 */
+    public static function javascript($input) {
+        // process an array
+        if (is_array($input)) {
+            foreach ($input as $key => $val) {
+                $input[$key] = javascript($val);
+            }
+        // process a separate element
+        } else {
+            // convert urlencoded hex values to decimal and then to a character
+            $input = preg_replace('/%([0-9a-f]{2})/ie', 'chr(hexdec($1))', (string)$input);
+        }
+        return $input;
+    }
+
 	/**
 	 * Use in URL context.
-	 * 
+	 *
 	 * @param string $input
 	 * @return string
 	 */
 	public static function url($input) {
 		return urldecode($input);
 	}
-	
+
 	/**
 	 * Strip slashes from input array or a string.
 	 *
@@ -56,7 +76,7 @@ class Fari_Decode {
 		// strip slashes in a string
 		} else return stripslashes($input);
 	}
-	
+
 	/**
 	 * Decode diacritics after being encoded (in JavaScript context for ex.).
 	 *
@@ -67,14 +87,14 @@ class Fari_Decode {
 		return str_replace(array('%25u011B', '%25u0161', '%25u010D', '%25u0159', '%25u010F', '%25u0165',
 					 '%25u0148', '%E1', '%E9', '%ED', '%F3', '%FA', '%25u016F', '%25u017E', '%FD',
 					 '%25u011A', '%25u0158', '%25u0160', '%25u010C', '%25u010E', '%25u0164',
-					 '%25u0147', '%25u017D',
+					 '%25u0147', '%25u017D'
 					 ),
 				   array('ě', 'š', 'č', 'ř', 'ď', 'ť', 'ň', 'á', 'é', 'í', 'ó', 'ú', 'ů', 'ž', 'ý',
-					 'Ě', 'Ř', 'Š', 'Č', 'Ď', 'Ť', 'Ň', 'Ž', 'Á', 'É', 'Í', 'Ý', 'Ó', 'Ú',
+					 'Ě', 'Ř', 'Š', 'Č', 'Ď', 'Ť', 'Ň', 'Ž', 'Á', 'É', 'Í', 'Ý', 'Ó', 'Ú'
 					 ),
 				   $input);
 	}
-	
+
 	/**
 	 * Decode characters like ., (, ), [, ], @, ? etc. into HTML entities (in JavaScript context for ex.).
 	 *
@@ -96,7 +116,7 @@ class Fari_Decode {
 					 ),
 				   $input);
 	}
-	
+
 	/**
 	 * Decodes accents from UTF-8 into ANSI (PHPro.org).
 	 *
@@ -178,5 +198,5 @@ class Fari_Decode {
 				 );
 		return str_replace($accented, $replace, $input);
 	}
-	
+
 }

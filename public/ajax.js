@@ -5,19 +5,19 @@
 function Ajax() {
 	// ------------------------------
 	//       VARIABLES
-	// ------------------------------	
+	// ------------------------------
 	this.req = null;
 	this.url = null;
 	this.method = 'GET'; // default
 	this.async = true; // the "A" in AJAX
-	
+
 	// status code and text
 	this.status = null;
 	this.statusText = '';
-	
+
 	// string of formated data for POST
 	this.postData = null;
-	
+
 	// ------------------------------
 	//       RESPONSE HANDLING
 	// ------------------------------
@@ -25,7 +25,8 @@ function Ajax() {
 	this.loadingHand = loading; // loading() will display a spinner in <div id="loading">
 	// response handler (e.g., for writing to a div)
 	this.responseHand = toDiv; // toDiv() will write via innerHTML to a target div id
-	// target div id to be used with our response handler
+	this.errorHand = null; // error handler
+    // target div id to be used with our response handler
 	this.responseDiv = null;
 	// format of the response
 	this.responseFormat = 'text', // 'text', 'xml', or 'object'
@@ -34,7 +35,7 @@ function Ajax() {
 
 	// ------------------------------
 	//       INITIALIZE OBJECT
-	// ------------------------------	
+	// ------------------------------
 	// The init method goes through each possible way of creating an XMLHttpRequest
 	// object until it creates one successfully. This object is then returned to the calling
 	// function.
@@ -66,7 +67,7 @@ function Ajax() {
 
 	// ------------------------------
 	//       AJAX REQUEST PROCESS
-	// ------------------------------	
+	// ------------------------------
 	// This first part of doReq calls init to create an instance of the XMLHttpRequest
 	// class, and displays a quick alert if it’s not successful.
 	this.doReq = function() {
@@ -81,13 +82,13 @@ function Ajax() {
 		// url: requested (or POSTed) page
 		// async: work asynchronously if set to true
 		this.req.open(this.method, this.url, this.async);
-		
+
 		// in case we POST data via doPost()
 		if (this.method == "POST") {
 			// change headers
 			this.req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		}
-		
+
 		var self = this; // Fix loss-of-scope in inner function
 		// An XMLHttpRequest object tells you about each change in state by firing an
 		// readystatechange event
@@ -95,9 +96,8 @@ function Ajax() {
 			var resp = null;
 			// completed: the response has been loaded and the request is completed.
 			if (self.req.readyState == 4) {
-                                // remove the spinner class first
-				//document.getElementById('loading').innerHTML = '';
-				
+                //document.getElementById('loading').innerHTML = '';
+
 				// Provide response in different formats:
 				switch (self.responseFormat) {
 					case 'text':
@@ -117,7 +117,10 @@ function Ajax() {
 					//self.handleResp(resp); // handle with response handler method
 					self.responseHand(self.responseDiv, resp)
 				} else {
-					//self.errorHand(resp);
+                    // abort request
+                    self.req.abort();
+                    // handle with a handler...
+					self.errorHand;
 				}
 			}
 			// interactive: the response is being downloaded, responseText holds partial data
@@ -138,15 +141,15 @@ function Ajax() {
 				// Do stuff to handle response
 			}
 		};
-		
+
 		// Use the send method of the XMLHttpRequest class to start the HTTP request:
 		this.req.send(this.postData);
-	
+
 	};
 
 	// ------------------------------
 	//       GET & POST REQUESTS
-	// ------------------------------	
+	// ------------------------------
 	// To make a request we set the url and handler
 	// url: target URL
 	// target: a target div id for the response
@@ -168,24 +171,6 @@ function Ajax() {
 		this.doReq();
 	};
 
-	// ------------------------------
-	//       ERROR HANDLING
-	// ------------------------------	
-	// This method checks to make sure that pop-ups are not blocked, then tries to
-	// display the full text of the server’s error page content in a new browser window.
-	this.errorHand = function() {
-		var errorWin;
-		try {
-			errorWin = window.open('', 'errorWin');
-			errorWin.document.body.innerHTML = this.responseText;
-		}
-		catch (e) {
-			alert('Error\n'
-			      + 'Status Code: ' + this.req.status + '\n'
-			      + 'Status Description: ' + this.req.statusText);
-		}
-	};
-	
 	// This method changes the onreadystate event handler to an empty function,
 	// calls the abort method on your instance of the XMLHttpRequest class, then destroys
 	// the instance you’ve created.
@@ -199,7 +184,7 @@ function Ajax() {
 
 	// ------------------------------
 	//       FORM POST STRING
-	// ------------------------------		
+	// ------------------------------
 	// a helper function that will create a key-value pair from form data so that we can POST it
 	// source: form name
 	this.formString = function(formName) {
@@ -211,12 +196,12 @@ function Ajax() {
 			switch (formElem.type) {
 				case 'checkbox':
 					if (formElem.checked) {
-						result += formElem.name + '=' + escape(formElem.value);
+						result += formElem.name + '=' + encodeURIComponent(formElem.value);
 					}
 					break;
 				default:
 					// form 'name=value' pair
-					result += formElem.name + '=' + escape(formElem.value);
+					result += formElem.name + '=' + encodeURIComponent(formElem.value);
 			}
 			// add '&' symbol if we have more data to add
 			if (i < fieldsNumber) {
@@ -229,13 +214,13 @@ function Ajax() {
 
 // ------------------------------
 //       HANDLERS
-// ------------------------------	
+// ------------------------------
 // handler that will write the result 'str' into <div id="'id'">
 var toDiv = function(id, str) {
 	// check if we are reloading maybe?
         if (str == "location.reload(true)") { location.reload(true); }
         // write the text
-	else document.getElementById(id).innerHTML = str;
+	else if (str.length > 0) document.getElementById(id).innerHTML = str;
 }
 
 // handler function that will add some effects to 'loading' status display
@@ -254,6 +239,6 @@ var toggle = function(id) {
 
 // ------------------------------
 //       INSTANTIALIZE
-// ------------------------------	
+// ------------------------------
 // make and instance of Ajax class
 var ajax = new Ajax();

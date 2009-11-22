@@ -3,7 +3,7 @@
 /**
  * Database connection and CRUD functions.
  * Input is not filtered here! But at least parametres are binded.
- * 
+ *
  * @author Radek Stepan <radek.stepan@gmail.com>
  * @license http://www.opensource.org/licenses/mit-license.php The MIT License
  *
@@ -11,26 +11,26 @@
  */
 
 class Fari_Db {
-	
+
 	/**
 	 * DB connection instance
 	 * @var PDO
 	 */
 	private static $instance;
-	
+
 	/**
 	 * Returns a class description.
 	 *
 	 * @return string
 	 */
 	public static function _desc() { return 'Database connection and queries'; }
-	
+
 	/**
 	 * Singleton pattern preventing __construct and __clone.
 	 */
 	private function __construct() { }
 	private final function __clone() { }
-	
+
 	/**
 	 * Connect to the database or return connection instance.
 	 *
@@ -76,29 +76,34 @@ class Fari_Db {
      *
      * @param string $table Database table we work with
 	 * @param string $columns Columns to return
-	 * @param array $where Where clause in a form array('column' => 'value')
+	 * @param array/string $where Where clause in a form array('column' => 'value')
 	 * @param string $order Order by clause
 	 * @param string $limit Limit by clause
 	 * @return array Table
      */
-    public static function select($table, $columns='*', array $where=NULL, $order=NULL, $limit=NULL, $toString=FALSE) {
+    public static function select($table, $columns='*', $where=NULL, $order=NULL, $limit=NULL, $toString=FALSE) {
         // connect to the database
         $dbHandler = self::_connect();
         // form sql statement
 		try {
             $sql = 'SELECT ' . $columns . ' FROM ' . $table;
             // the WHERE clause
-            if (isset($where)) $sql .= ' WHERE ' . self::_buildColumns(array_keys($where));
+            if (isset($where)) {
+                // it is an array, do binding
+                if (is_array($where)) $sql .= ' WHERE ' . self::_buildColumns(array_keys($where));
+                // a string passed, no binding!
+                else $sql .= ' WHERE ' . $where;
+            }
 
             // add ordering and limit clauses
             if (isset($order)) $sql .= ' ORDER BY ' . $order;
 			if (isset($limit)) $sql .= ' LIMIT ' . $limit;
-			
+
 			// prepare statement
             $statement = $dbHandler->prepare($sql);
-                        
+
 			// bind id parametres
-            $statement = self::_bindParametres($where, $statement);
+            if (is_array($where)) $statement = self::_bindParametres($where, $statement);
 
             if ($toString) self::_toString($statement->queryString, NULL, $where);
             else {
@@ -115,17 +120,17 @@ class Fari_Db {
 		}
     }
 
-        /**
-         * Select from a table and return an array (echo query string).
-         *
-         * @param string $table Database table we work with
+    /**
+     * Select from a table and return an array (echo query string).
+     *
+     * @param string $table Database table we work with
 	 * @param string $columns Columns to return
-	 * @param array $where Where clause in a form array('column' => 'value')
+	 * @param array/string $where Where clause in a form array('column' => 'value')
 	 * @param string $order Order by clause
 	 * @param string $limit Limit by clause
 	 * @return echo Query string to the view
          */
-        public static function selectString($table, $columns='*', array $where=NULL, $order=NULL, $limit=NULL) {
+        public static function selectString($table, $columns='*', $where=NULL, $order=NULL, $limit=NULL) {
                 self::select($table, $columns, $where, $order, $limit, TRUE);
         }
 
@@ -134,12 +139,12 @@ class Fari_Db {
      *
      * @param string $table Database table we work with
 	 * @param string $columns Columns to return
-	 * @param array $where Where clause in a form array('column' => 'value')
+	 * @param array/string $where Where clause in a form array('column' => 'value')
 	 * @param string $order Order by clause
 	 * @param string $limit Limit by clause
 	 * @return array Table
      */
-    public static function selectRow($table, $columns='*', array $where=NULL, $order=NULL, $limit=NULL, $toString=FALSE) {
+    public static function selectRow($table, $columns='*', $where=NULL, $order=NULL, $limit=NULL, $toString=FALSE) {
         if ($toString) self::select($table, $columns, $where, $order, $limit, TRUE);
         else {
                 $result = self::select($table, $columns, $where, $order, $limit);
@@ -152,12 +157,12 @@ class Fari_Db {
      *
      * @param string $table Database table we work with
      * @param string $columns Columns to return
-     * @param array $where Where clause in a form array('column' => 'value')
+     * @param array/string $where Where clause in a form array('column' => 'value')
      * @param string $order Order by clause
      * @param string $limit Limit by clause
      * @return array Table
      */
-    public static function selectRowString($table, $columns='*', array $where=NULL, $order=NULL, $limit=NULL) {
+    public static function selectRowString($table, $columns='*', $where=NULL, $order=NULL, $limit=NULL) {
             self::selectRow($table, $columns, $where, $order, $limit, TRUE);
     }
 
@@ -171,18 +176,18 @@ class Fari_Db {
      public static function insert($table, array $values, $toString=FALSE) {
         // connect to the database
 		$dbHandler = self::_connect();
-        
+
 		// can't reuse param binding easily as we have (columns) VALUES (values) and not column = value
 		$columns = implode(', ', array_keys($values));
 		$valuesQuoted = implode(', ', self::_addQuotes($values));
-		
+
 		// form sql statement
 		try {
             $sql = 'INSERT INTO ' . $table . ' (' . $columns . ') VALUES (' . $valuesQuoted . ')';
 
             // prepare statement
 			$statement = $dbHandler->prepare($sql);
-                        
+
                         if ($toString) self::_toString($statement->queryString, $values);
                         else $statement->execute(); // execute query
         } catch (PDOException $exception) {
@@ -209,27 +214,32 @@ class Fari_Db {
      *
      * @param string $table Database table we work with
 	 * @param array $values Values to insert in a form array('column' => 'value')
-	 * @param array $where Where clause in a form array('column' => 'value')
+	 * @param array/string $where Where clause in a form array('column' => 'value')
 	 * @return void
      */
-     public static function update($table, array $values, array $where=NULL, $toString=FALSE) {
+     public static function update($table, array $values, $where=NULL, $toString=FALSE) {
         // connect to the database
 		$dbHandler = self::_connect();
-		
+
 		// form sql statement
 		try {
 			// use set0, set1 for parameter preparation for binding
             $sql = 'UPDATE ' . $table . ' SET ' . self::_buildColumns(array_keys($values), 'set', ',');
 
             // the WHERE clause
-            if (isset($where)) $sql .= ' WHERE ' . self::_buildColumns(array_keys($where));
-			
+            if (isset($where)) {
+                // it is an array, do binding
+                if (is_array($where)) $sql .= ' WHERE ' . self::_buildColumns(array_keys($where));
+                // a string passed, no binding!
+                else $sql .= ' WHERE ' . $where;
+            }
+
             // prepare statement
 			$statement = $dbHandler->prepare($sql);
-                        
+
 			// bind set and id parametres
 			$statement = self::_bindParametres($values, $statement, 'set');
-            $statement = self::_bindParametres($where, $statement);
+           if (is_array($where)) $statement = self::_bindParametres($where, $statement);
 
             if ($toString) self::_toString($statement->queryString, $values, $where);
             else $statement->execute(); // execute query
@@ -257,10 +267,10 @@ class Fari_Db {
      *
      * @param table name
      * @param string $table Database table we work with
-	 * @param array $where Where clause in a form array('column' => 'value')
+	 * @param array/string $where Where clause in a form array('column' => 'value')
 	 * @return void
      */
-    public static function delete($table, array $where=NULL, $toString=FALSE) {
+    public static function delete($table, $where=NULL, $toString=FALSE) {
         // connect to the database
 		$dbHandler = self::_connect();
 
@@ -269,13 +279,18 @@ class Fari_Db {
             $sql = 'DELETE FROM ' . $table;
 
             // the WHERE clause
-            if (isset($where)) $sql .= ' WHERE ' . self::_buildColumns(array_keys($where));
-			
+            if (isset($where)) {
+                // it is an array, do binding
+                if (is_array($where)) $sql .= ' WHERE ' . self::_buildColumns(array_keys($where));
+                // a string passed, no binding!
+                else $sql .= ' WHERE ' . $where;
+            }
+
             // prepare statement
 			$statement = $dbHandler->prepare($sql);
-                        
+
 			// bind id parametres
-            $statement = self::_bindParametres($where, $statement);
+            if (is_array($where)) $statement = self::_bindParametres($where, $statement);
 
             if ($toString) self::_toString($statement->queryString, NULL, $where);
             else $statement->execute(); // execute query
@@ -334,7 +349,7 @@ class Fari_Db {
                 if ($i < $count-1) $sql .= ' ' . $separator . ' '; // add AND if we are to add more stuff
             }
         } else $sql .= $columns . ' = :' . $id; // just one parameter
-                
+
 		return $sql;
     }
 
@@ -361,7 +376,7 @@ class Fari_Db {
 
 					// bind parameter :id0, :id1 etc.
                     $statement->bindValue(':' . $id . $i, $value, $paramType);
-					
+
 					// increase counter
 					$i++;
                 }
@@ -373,7 +388,7 @@ class Fari_Db {
                 // bind parameter :id
                 $statement->bindParam(':' . $id, $values, $paramType);
             }
-                        
+
             return $statement;
         } catch (PDOException $exception) {
             try {
@@ -387,28 +402,30 @@ class Fari_Db {
      *
      * @param string $statement SQL query string
      * @param array $values The values to insert, update
-     * @param array $where The where clause
+     * @param array/string $where The where clause
      * @return echo Query string into the view
      */
-    private static function _toString($statement, array $values=NULL, array $where=NULL) {
+    private static function _toString($statement, array $values=NULL, $where=NULL) {
         // traverse the values and where clause arrays
-        $binder = 'set'; foreach (array($values, $where) as $array) {
-            if (isset($array)) {
-                // replace bound parametres with actual values
-                $i=0; foreach ($array as $value) {
-                        // determine value type of string or integer
-                        $value = (Fari_Filter::isInt($value)) ? "$value" : "'$value'";
-                        // we have a variable binding key
-                        $statement = preg_replace("/:$binder$i/", $value, $statement);
-                        $i++;
+        if (is_array($where)) {
+            $binder = 'set'; foreach (array($values, $where) as $array) {
+                if (isset($array)) {
+                    // replace bound parametres with actual values
+                    $i=0; foreach ($array as $value) {
+                            // determine value type of string or integer
+                            $value = (Fari_Filter::isInt($value)) ? "$value" : "'$value'";
+                            // we have a variable binding key
+                            $statement = preg_replace("/:$binder$i/", $value, $statement);
+                            $i++;
+                    }
                 }
+                // a switch to keep track of which array are we traversing
+                $binder = 'id';
             }
-            // a switch to keep track of which array are we traversing
-            $binder = 'id';
         }
-        
+
         // echo into the view
         die("<pre>$statement</pre>");
     }
-	
+
 }
