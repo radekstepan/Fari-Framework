@@ -33,6 +33,11 @@ function Ajax() {
 	this.responseText = null;
 	this.responseXML = null;
 
+    // ------------------------------
+    //      TIMEOUT CHECK
+    // ------------------------------
+    this.timeout = 10; // timeout in 10 seconds
+
 	// ------------------------------
 	//       INITIALIZE OBJECT
 	// ------------------------------
@@ -135,6 +140,8 @@ function Ajax() {
 			if (self.req.readyState == 1) {
 				// add a class with a spinner
 				//self.loadingHand();
+                // start the timeout
+                setTimeout("ajax.checkTimeout()", self.timeout * 1000);
 			}
 			// uninitialized: open has not been called yet
 			if (self.req.readyState == 0) {
@@ -146,6 +153,11 @@ function Ajax() {
 		this.req.send(this.postData);
 
 	};
+
+    // reset the request if timed out
+    this.checkTimeout = function() {
+        if (ajax.req.readyState > 0) ajax.req.abort();
+    }
 
 	// ------------------------------
 	//       GET & POST REQUESTS
@@ -226,15 +238,6 @@ var toDiv = function(id, str) {
 // handler function that will add some effects to 'loading' status display
 var loading = function() {
 	document.getElementById('loading').innerHTML = '<span class="loading">Loading</span>';
-}
-
-// show/hide target div
-var toggle = function(id) {
-	var e = document.getElementById(id);
-	if(e.style.display == 'block')
-		e.style.display = 'none';
-	else
-		e.style.display = 'block';
 }
 
 // ------------------------------
