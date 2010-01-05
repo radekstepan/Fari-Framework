@@ -161,4 +161,16 @@ class Fari_Escape {
 	        return preg_replace("/\s+/", "_", $input);
 	}
 	
+    /**
+	 * Generate a slug from a text (e.g., "Červený 'nejede'!" will turn into "cerveny-nejede").
+	 *
+	 * @param string $input
+	 * @return string
+	 */
+	public static function slug($input) {
+	    return preg_replace("/\s+/", "-",
+            preg_replace("/[^a-zA-Z0-9 ]/", "",
+                strtolower(
+                    Fari_Decode::accents(($input)))));
+	}
 }

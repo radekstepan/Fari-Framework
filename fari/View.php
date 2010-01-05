@@ -248,7 +248,7 @@ class Fari_View {
 	private function _isDirWritable($cacheDir) {
 		try {
 			if (!is_writable(BASEPATH . $cacheDir)) {
-				throw new Fari_Exception('Cache directory ' . $cacheDir . 'is not writable.');
+				throw new Fari_Exception('Cache directory ' . $cacheDir . ' is not writable.');
 			}
 		} catch (Fari_Exception $exception) { $exception->fire(); }
 	}
