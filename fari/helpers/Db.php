@@ -39,7 +39,7 @@ class Fari_Db {
 	private static function _connect() {
 		// do we have an instance already?
 		if (!self::$instance instanceof PDO) {
-			try {
+                        try {
 				// which driver are we using?
 				switch (strtolower(DB_DRIVER)) {
 					// MySQL
@@ -68,7 +68,11 @@ class Fari_Db {
 								 $exception->getMessage() . '.');
                                 } catch (Fari_Exception $exception) { $exception->fire(); }
 			}
-		} return self::$instance;
+		}
+                // queries executed counter
+                $_SESSION['Fari\Benchmark\Queries']++;
+                // return an instance
+                return self::$instance;
 	}
 
     /**

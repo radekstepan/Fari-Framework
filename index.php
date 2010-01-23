@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Fari MVC Framework 1.2.1.0 (Jan 5, 2010)
+ * Fari MVC Framework 1.2.1.1 (Jan 23, 2010)
  *
  * Main point of access, a bootstrapping file. Here we declare variables and set configurations.
  *
@@ -15,9 +15,10 @@
 if (!isset($_SESSION)) session_start();
 // start benchmarking
 $_SESSION['Fari\Benchmark\Total'] = microtime();
+$_SESSION['Fari\Benchmark\Queries'] = 0;
 
 // set so that we can check if PHP pages have been accessed directly
-if (!defined('FARI')) define('FARI', 'Fari MVC Framework 1.2.1.0');
+if (!defined('FARI')) define('FARI', 'Fari MVC Framework 1.2.1.1');
 
 // get absolute pathname and define it as a constant (server install path)
 if (!defined('BASEPATH')) define('BASEPATH', dirname(__FILE__));

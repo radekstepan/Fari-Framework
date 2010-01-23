@@ -52,4 +52,5 @@ class Albums_Controller extends Fari_Controller {
 		Albums::delete($albumId);
 		$this->redirect('/albums/index/'); // redirect back to the listing
 	}
+
 }

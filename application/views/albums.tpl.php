@@ -48,7 +48,14 @@
 			<?php endforeach; ?>
 		</table>
 	
-		<p id="footer">Logged in as: <b><?php echo $user ;?></b> <a href="<?php $this->url('login/logout') ;?>">Logout</a></p>
+		<p id="footer">
+                    Logged in as: <b><?php echo $user ;?></b> <a href="<?php $this->url('login/logout') ;?>">Logout</a>
+                    <br />
+                    <span style="font-size:80%;">Executed
+                    <?php echo $_SESSION['Fari\Benchmark\Queries'] ;?> database queries using
+                    <?php echo Fari_Benchmark::getMemory() ;?> of memory in
+                    <?php echo Fari_Benchmark::getTime() ;?></span>
+                </p>
 	</div>
 </body>
 </html>
