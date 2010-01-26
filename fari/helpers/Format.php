@@ -91,6 +91,60 @@ class Fari_Format {
                                 return $date;
                 }
 	}
+
+	/**
+	 * Convert a time to distance from now.
+	 *
+	 * @param string $time A timestamp of a date (or convert into one from YYYY-MM-DD)
+	 * @return string A formatted string of a date from now, e.g.: '3 days ago'
+	 */
+    public static function age($time) {
+        // convert YYYY-MM-DD into a timestamp
+        if (Fari_Filter::isDate($time)) {
+            list ($year, $month, $day) = preg_split('/[-\.\/ ]/', $time);
+            $time = mktime('1', '1', '1', $month, $day, $year);
+        }
+
+        // time now
+        $now = time();
+        // the difference
+        $difference = $now - $time;
+        // in the past?
+        $ago = ($difference > 0) ? 1 : 0;
+        // absolute value
+        $difference = abs($difference);
+
+        // switch case textual difference
+        switch ($difference) {
+            case ($difference < 60): $result = 'a minute'; break;
+            case ($difference < 60 * 60): $result = 'an hour'; break;
+            case ($difference < 60 * 60 * 24): $result = 'a day'; break;
+            case ($difference < 60 * 60 * 24 * 7): $result = 'a week'; break;
+            case ($difference < 60 * 60 * 24 * 7 * 2): $result = 'two weeks'; break;
+            case ($difference < 60 * 60 * 24 * 7 * 3): $result = 'three weeks'; break;
+            case ($difference < 60 * 60 * 24 * 30): $result = 'a month'; break;
+            case ($difference < 60 * 60 * 24 * 60): $result = 'two months'; break;
+            case ($difference < 60 * 60 * 24 * 90): $result = 'three months'; break;
+            case ($difference < 60 * 60 * 24 * 120): $result = 'four months'; break;
+            case ($difference < 60 * 60 * 24 * 182): $result = 'half a year'; break;
+            case ($difference < 60 * 60 * 24 * 365): $result = 'a year'; break;
+            case ($difference < 60 * 60 * 24 * 365 * 2): $result = 'two years'; break;
+            case ($difference < 60 * 60 * 24 * 365 * 3): $result = 'three years'; break;
+            case ($difference < 60 * 60 * 24 * 365 * 4): $result = 'four years'; break;
+            case ($difference < 60 * 60 * 24 * 365 * 5): $result = 'five years'; break;
+            case ($difference < 60 * 60 * 24 * 365 * 6): $result = 'six years'; break;
+            case ($difference < 60 * 60 * 24 * 365 * 7): $result = 'seven years'; break;
+            case ($difference < 60 * 60 * 24 * 365 * 10): $result = 'a decade'; break;
+            case ($difference < 60 * 60 * 24 * 365 * 20): $result = 'two decades'; break;
+            case ($difference < 60 * 60 * 24 * 365 * 30): $result = 'three decades'; break;
+            case ($difference < 60 * 60 * 24 * 365 * 40): $result = 'four decades'; break;
+            case ($difference < 60 * 60 * 24 * 365 * 50): $result = 'half a century'; break;
+            case ($difference < 60 * 60 * 24 * 365 * 100): $result = 'a century'; break;
+            default: $result = 'more than a century'; break;
+        }
+
+        return ($ago) ? $result . ' ago' : 'in ' . $result;
+    }
 	
 	/**
 	 * Convert bytes to human readable format (based on CodeIgniter).
