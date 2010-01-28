@@ -2,7 +2,7 @@
 
 /**
  * Various text and number formatting functions.
- * 
+ *
  * @author Radek Stepan <radek.stepan@gmail.com>
  * @license http://www.opensource.org/licenses/mit-license.php The MIT License
  *
@@ -10,13 +10,13 @@
  */
 
 class Fari_Format {
-	
+
 	/**
 	 * Default currency formatting if unknown passed
 	 * @var const
 	 */
 	const CURRENCY = 'GBP';
-	
+
 	/**
 	 * Returns a class description.
 	 *
@@ -52,7 +52,7 @@ class Fari_Format {
         public static function currency($number, $currencyCode) {
 		// if the currency doesn't have a function defined for itself, give us a default
 		$function = (!is_callable('self::_to' . $currencyCode)) ? '_to' . self::CURRENCY : '_to' . $currencyCode;
-		
+
                 return self::$function($number);
 	}
 
@@ -71,7 +71,7 @@ class Fari_Format {
 			list ($year, $month, $day) = preg_split('/[-\.\/ ]/', $date);
 		// else return input
 		} else return $date;
-                
+
                 switch ($dateFormat) {
                         case 'DD-MM-YYYY':
                                 return $day . '-' . $month . '-' . $year;
@@ -145,7 +145,39 @@ class Fari_Format {
 
         return ($ago) ? $result . ' ago' : 'in ' . $result;
     }
-	
+
+	/**
+	 * Highlight word(s) in text(s) (e.g.: search results).
+	 *
+	 * @param mixed $string Array/string to apply highlighting to
+     * @param mixed $highlight Array/string that we want to highlight
+     * @param array $whitelist Array of keys we want to highlight in $string array (optional)
+	 * @return mixed Text with <span class="highlight"> applied
+	 */
+    public static function highlight($string, $highlight, array $whitelist=NULL) {
+        // multiple words to highlight
+        if (is_array($highlight)) {
+            // sort by length
+            $lengths = array(); $match = '';
+            foreach ($highlight as $word) $lengths []= strlen($word);
+            arsort(&$lengths);
+            // form string to match sorted by word length
+            foreach ($lengths as $key => $word) $match .= $highlight[$key] . '|'; $highlight = substr($match, 0, -1);
+        }
+
+        // the input text is an array...
+        if (is_array($string)) {
+            // highlight words in the array
+            foreach ($string as $key => &$value) {
+                // if we have a whitelist... use it
+                if (!isset($whitelist) OR in_array($key, $whitelist))
+                    $value = preg_replace("/($highlight)/i", '<span class="highlight">\1</span>', $value);
+            } // ... or is a string
+        } else $string = preg_replace("/($highlight)/i", '<span class="highlight">\1</span>', $string);
+
+        return $string;
+    }
+
 	/**
 	 * Convert bytes to human readable format (based on CodeIgniter).
 	 *
@@ -170,7 +202,7 @@ class Fari_Format {
 		}
 		return number_format($bytes, 1) . ' ' . $unit;
 	}
-	
+
         /**
          * Format as GBP.
          *
@@ -215,7 +247,7 @@ class Fari_Format {
                 $value = self::_formatCurrency($number);
                 return '&#36;' . $value;
         }
-        
+
 	/**
 	 * Format our number after we've changed the locale.
 	 *
@@ -225,5 +257,5 @@ class Fari_Format {
 	private static function _formatCurrency($number) {
 		return @number_format($number, 2, ',', ' ');
 	}
-	
+
 }
