@@ -317,6 +317,24 @@ class Fari_Db {
             self::delete($table, $where, TRUE);
     }
 
+    /**
+     * Take a value from subarray and use it as a key (e.g.: use on 'settings' arrays)
+     *
+     * @param array $array Array with data
+     * @param string $key Key to use
+     * @return array Formatted array
+     */
+    public static function toKeyValues(array $array, $key) {
+        // traverse the input
+        foreach ($array as $arrayKey => $value) {
+            // create a new array entry
+            $array[$value[$key]] = $value;
+            // unset the original key and redundant subarray key
+            unset($array[$arrayKey]); unset($array[$value[$key]][$key]);
+        }
+        return $array;
+    }
+
 	/**
 	 * Will add quotes to column values when inserting into a database.
 	 *

@@ -52,6 +52,39 @@ class Fari_Textile {
 	}
 
     /**
+     * Strip Textile tags (reusing the regex)
+     *
+     * @param string $text Textile tagged input text
+     * @return string Plain formatted text
+     */
+	public static function toText($text) {
+        $text = self::_prep($text);
+
+        // unordered lists
+        $text = preg_replace('/(?:\\n|\<\/li>)\*\s(.+)/', "$1\n", $text);
+        // headings
+        $text = preg_replace('/h([\0-9])\. (.+)\n/m','$2 ', $text);
+        // blockquotes
+        $text = preg_replace('/bq\. (.+)\n/m','$1 ', $text);
+        // paragraphs
+        $text = preg_replace('/p\. (.+)\n/m','$1 ', $text);
+		// strong (bold)
+		$text = preg_replace('/\*([^\*]+)\*/', '$1$2', $text);
+		// emphasis (italics)
+        $text = preg_replace('/\_([^\_]+)\_/', '$1$2', $text);
+		// insert (underline)
+        $text = preg_replace('/\+([^\+]+)\+/', '$1$2', $text);
+        // hyperlinks
+        $regex = '/(?:\"|&#34;)([^\(?:\"|&#34;)]+)(?:\"|&#34;):(http|https|ftp):\/\/([^\\s]+)/';
+		$text = preg_replace($regex, '$1', $text);
+        // images
+        $regex = '/\!(https?|ftp|file):\/\/([-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])\!/i';
+		$text = preg_replace($regex, '', $text);
+
+        return $text;
+    }
+
+    /**
      * Prepare input text by creating matching endlines etc.
      *
      * @param string $text Textile tagged input text
