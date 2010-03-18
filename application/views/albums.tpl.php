@@ -25,7 +25,7 @@
 		<p> Pages: 
 			<?php foreach ($paginator['paginator'] as $page): ?>
                 <a href="
-                    <?php $this->url('albums/index/'.$page['number']) ;?>
+                    <?php $this->url('albums/'.$page['number']) ;?>
                    "><?php echo ($page['class'] == 'current') ? '<b>'.$page['number'].'</b>' : $page['number']; ?></a>&nbsp;
 			<?php endforeach ;?>
 		</p>

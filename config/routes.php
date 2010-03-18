@@ -10,5 +10,6 @@
  */
 
 $customRoutes = array(
-        //array('sitemap.xml', 'documentation/sitemap'),
+    // nicely rewrite albums listing (using default 'index' action)
+    '/albums\/([\0-9])/' => 'albums/index/\1'
 );

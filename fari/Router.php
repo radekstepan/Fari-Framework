@@ -54,7 +54,7 @@ class Fari_Router {
 	 * @return void
 	 */
 	public static function loadRoute() {
-		// first make sure we have the Controllers directory right
+        // first make sure we have the Controllers directory right
 		$controllerDir = BASEPATH . '/' . APP_DIR . '/controllers/';
 		try {
 			// throw an error if is not a directory
@@ -179,21 +179,21 @@ class Fari_Router {
 		$routesFile = BASEPATH . '/config/routes' . EXT;
 		// do we have the routes file?
 		if (is_readable($routesFile)) {
-			// include, now we have the $routes array
+			// include, now we have the $customRoutes array
 			include($routesFile);
 			// if we have $customRoutes to traverse
 			if (is_array($customRoutes)) {
-				// traverse routes
-				foreach ($customRoutes as $route) {
-					// we have a match, first param in $route is always 'from' field
-					if ($route[0] == $request) {
-						// 'change' the request to 'to' field in route
-						$request = $route[1];
-						// don't bother with more routes, first come first served basis
+                // traverse routes
+                foreach ($customRoutes as $pattern => $result) {
+                    // we have a match
+                    if (preg_match($pattern, $request)) {
+                        // 'change' the request by replacing the pattern match
+                        $request = preg_replace($pattern, $result, $request);
+                        // don't bother with more routes, first come first served basis
 						break;
-					}
-				}
-			}
+                    }
+                }
+            }
 		}
 		return $request;
 	}
