@@ -1,24 +1,24 @@
 <?php
 
 /**
- * Fari MVC Framework 1.3.0.0 (Mar 18, 2010)
+ * Fari Framework
  *
- * Main point of access, a bootstrapping file. Here we declare variables and set configurations.
- *
- * @author Radek Stepan <radek.stepan@gmail.com>
- * @license http://www.opensource.org/licenses/mit-license.php The MIT License
- *
- * @package Fari MVC Framework
+ * @copyright Copyright (c) 2008, 2010 Radek Stepan
+ * @license   http://www.opensource.org/licenses/mit-license.php The MIT License
+ * @link      http://radekstepan.com
+ * @category  Fari Framework
  */
+
+
 
 // start session
 if (!isset($_SESSION)) session_start();
-// start benchmarking
-$_SESSION['Fari\Benchmark\Total'] = microtime();
-$_SESSION['Fari\Benchmark\Queries'] = 0;
 
+
+
+// Step 1a: Define absolute environment values
 // set so that we can check if PHP pages have been accessed directly
-if (!defined('FARI')) define('FARI', 'Fari MVC Framework 1.3.0.0');
+if (!defined('FARI')) define('FARI', 'Fari Framework 2.0.0 (Apr 9, 2010)');
 
 // get absolute pathname and define it as a constant (server install path)
 if (!defined('BASEPATH')) define('BASEPATH', dirname(__FILE__));
@@ -31,27 +31,19 @@ if (!defined('WWW_DIR')) {
 // default file extension (.php)
 if (!defined('EXT')) define('EXT', '.' . pathinfo(__FILE__, PATHINFO_EXTENSION));
 
-// default Action for the application (index() is always implemented as is abstract)
-if (!defined('DEFAULT_ACTION')) define('DEFAULT_ACTION', 'index');
 
-// include database and application settings
+
+// Step 1b: Include database and application specific settings
 require BASEPATH . '/config/config' . EXT;
 
-// initialize Error & Exceptions handling
-require BASEPATH . '/fari/Diagnostics' . EXT;
 
-// initialize the Router (load Controller)
-require BASEPATH . '/fari/Router' . EXT;
-// initialize the 'optional' Model (business logic)
-require BASEPATH . '/fari/Model' . EXT;
-// initialize the Controller (load Actions)
-require BASEPATH . '/fari/Controller' . EXT;
-// initialize the View (templating)
-require BASEPATH . '/fari/View' . EXT;
+
+// Step 2: Initialize Error & Exceptions handling and check environment
+require BASEPATH . '/fari/Application/ApplicationDiagnostics' . EXT;
 
 // check that we have a high enough version of PHP (5.2.0)
 try { if (version_compare(phpversion(), '5.2.0', '<=') == TRUE) {
-	throw new Fari_Exception('Fari MVC Framework requires PHP 5.2.0, you are using ' . phpversion() . '.'); }
+	throw new Fari_Exception('Fari Framework requires PHP 5.2.0, you are using ' . phpversion() . '.'); }
 } catch (Fari_Exception $exception) { $exception->fire(); }
 
 // check if user is using Apache user-directory found on temporary links to web hosting (e.g., http://site.com/~user/)
@@ -59,22 +51,56 @@ try { if (substr_count(WWW_DIR, '~') > 0) {
 	throw new Fari_Exception('Apache user-directory ' . WWW_DIR . ' not supported by Fari Framework.'); }
 } catch (Fari_Exception $exception) { $exception->fire(); }
 
-// autoload Model classes when needed (before exception is thrown)
+
+
+// Step 3: Define global functions and those required for framework start
+function splitCamelCase($string) {
+    return preg_split('/(?<=\\w)(?=[A-Z])/', $string);
+}
+
+// a shorthand function to call Diagnostics output
+function dump($mixed, $title='Variables Dump') {
+    Fari_ApplicationDiagnostics::dump($mixed, $title);
+}
+
+// echo URL to the (cached) View
+function url($link, $echo=TRUE, $domain=FALSE) {
+    // we want a full domain name
+    if ($domain) {
+        // assume we are either using HTTP or HTTPS
+        $url = ($_SERVER['HTTPS'] != 'on') ? 'http://' . $_SERVER['SERVER_ADDR'] . WWW_DIR . '/' . $link :
+        'https://' . $_SERVER['SERVER_ADDR'] . WWW_DIR . '/' . $link;
+        // ...alternatively use $_SERVER["SERVER_PROTOCOL"]
+    } else {
+        // default link
+        $url = ($link[0] == '/') ? WWW_DIR . $link : WWW_DIR . '/' . $link;
+    }
+
+    // echo to the view or return as a string
+    if ($echo) echo $url; else return $url;
+}
+
+
+
+// Step 3b: Autoload Model classes when needed (before exception is thrown)
 function __autoload($className) {
         // are we working with a Fari Helper?
         if (strpos($className, 'Fari_') === FALSE) {
-		$modelFilePath = BASEPATH . '/'. APP_DIR . '/models/' . strtolower($className) . EXT;
+            $classFilePath = BASEPATH . '/'. APP_DIR . '/models/' . strtolower($className) . EXT;
         } else {
 		// remove fari_ and build path
-		$modelFilePath = BASEPATH . '/fari/helpers/' . substr($className, 5) . EXT;
+        $className = splitCamelCase(substr($className, 5));
+		$classFilePath = BASEPATH . '/fari/' . $className[0] . '/' . implode('', $className) . EXT;
 	}
         try {
 		// check that model class exists
-		if (!file_exists($modelFilePath)) {
-			throw new Fari_Exception('Missing Model Class: ' . $modelFilePath . '.');
-		} else include($modelFilePath); // include file
+		if (!file_exists($classFilePath)) {
+			throw new Fari_Exception('Missing Class: ' . $classFilePath . '.');
+		} else include($classFilePath); // include file
 	} catch (Fari_Exception $exception) { $exception->fire(); }
 }
 
-// load Controller on static Router
-Fari_Router::loadRoute();
+
+
+// Step 4: Start the whole shebang
+Fari_ApplicationRouter::loadRoute();

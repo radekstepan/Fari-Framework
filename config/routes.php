@@ -1,15 +1,18 @@
 <?php if (!defined('FARI')) die();
 
 /**
- * An optional routes file that will serve as a helpful 'redirect' to your Controller/Actions.
- * 
- * @author Radek Stepan <radek.stepan@gmail.com>
- * @license http://www.opensource.org/licenses/mit-license.php The MIT License
+ * Fari Framework
  *
- * @package Fari
+ * @copyright Copyright (c) 2008, 2010 Radek Stepan
+ * @license   http://www.opensource.org/licenses/mit-license.php The MIT License
+ * @link      http://radekstepan.com
+ * @category  Fari Framework
  */
 
+
+
+// custom URL rewriting
 $customRoutes = array(
-    // nicely rewrite albums listing (using default 'index' action)
-    '/albums\/([\0-9])/' => 'albums/index/\1'
+    '/login/' => 'auth/login/',
+    '/logout/' => 'auth/logout/'
 );

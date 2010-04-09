@@ -1,3 +1,5 @@
+IndexIgnore *
+
 <IfModule mod_rewrite.c>
 # starts the mod_rewrite engine for url to filename translation
 RewriteEngine on
