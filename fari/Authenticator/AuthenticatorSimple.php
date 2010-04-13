@@ -139,5 +139,5 @@ class Fari_AuthenticatorSimple extends Fari_AuthenticatorTemplate {
     public function authenticateFail() {
         return FALSE;
     }
-	
+
 }

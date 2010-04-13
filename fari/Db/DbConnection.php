@@ -146,7 +146,7 @@ class Fari_DbConnection {
 		// form sql statement
 		try {
             $sql = 'INSERT INTO ' . $table . ' (' . $columns . ') VALUES (' . $valuesQuoted . ')';
-            
+
             // prepare statement
 			$statement = $this->connection->prepare($sql);
 
@@ -334,12 +334,12 @@ class Fari_DbConnection {
 		}
     }
 
-    
+
 
     /********************* helpers *********************/
 
 
-    
+
     /**
      * Take a value from subarray and use it as a key (e.g.: use on 'settings' arrays).
      * @param array $array Array with data
@@ -358,7 +358,7 @@ class Fari_DbConnection {
     }
 
 	/**
-	 * Will add quotes to column values when inserting into a database.
+     * Will add quotes to column values when inserting into a database.
 	 * @param string/array $values Value string or array of values to 'quoteize'
 	 * @return array Array with values in quotes
 	 */
@@ -484,5 +484,5 @@ class Fari_DbConnection {
         // echo into the view
         Fari_ApplicationDiagnostics::dump($statement, 'Fari_Db Query String');
     }
-    
+
 }

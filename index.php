@@ -18,7 +18,7 @@ if (!isset($_SESSION)) session_start();
 
 // Step 1a: Define absolute environment values
 // set so that we can check if PHP pages have been accessed directly
-if (!defined('FARI')) define('FARI', 'Fari Framework 2.0.0 (Apr 9, 2010)');
+if (!defined('FARI')) define('FARI', 'Fari Framework 2.1.0 (Apr 13, 2010)');
 
 // get absolute pathname and define it as a constant (server install path)
 if (!defined('BASEPATH')) define('BASEPATH', dirname(__FILE__));
@@ -68,9 +68,8 @@ function url($link, $echo=TRUE, $domain=FALSE) {
     // we want a full domain name
     if ($domain) {
         // assume we are either using HTTP or HTTPS
-        $url = ($_SERVER['HTTPS'] != 'on') ? 'http://' . $_SERVER['SERVER_ADDR'] . WWW_DIR . '/' . $link :
-        'https://' . $_SERVER['SERVER_ADDR'] . WWW_DIR . '/' . $link;
-        // ...alternatively use $_SERVER["SERVER_PROTOCOL"]
+        $url = ($_SERVER['HTTPS'] != 'on') ? 'http://' . $_SERVER['HTTP_HOST'] . WWW_DIR . '/' . $link :
+        'https://' . $_SERVER['HTTP_HOST'] . WWW_DIR . '/' . $link;
     } else {
         // default link
         $url = ($link[0] == '/') ? WWW_DIR . $link : WWW_DIR . '/' . $link;
@@ -84,20 +83,26 @@ function url($link, $echo=TRUE, $domain=FALSE) {
 
 // Step 3b: Autoload Model classes when needed (before exception is thrown)
 function __autoload($className) {
-        // are we working with a Fari Helper?
-        if (strpos($className, 'Fari_') === FALSE) {
-            $classFilePath = BASEPATH . '/'. APP_DIR . '/models/' . strtolower($className) . EXT;
+    // are we working with a Fari Classes?
+    if (strpos($className, 'Fari_') === FALSE) {
+        // the only exception being a heavily used ORM
+        if ($className == 'Table') {
+            $classFilePath = BASEPATH . '/fari/Db/DbTable' . EXT;
         } else {
-		// remove fari_ and build path
+            $classFilePath = BASEPATH . '/'. APP_DIR . '/models/' . strtolower($className) . EXT;
+        }
+    } else {
+        // remove Fari_ and build path
         $className = splitCamelCase(substr($className, 5));
-		$classFilePath = BASEPATH . '/fari/' . $className[0] . '/' . implode('', $className) . EXT;
-	}
-        try {
-		// check that model class exists
-		if (!file_exists($classFilePath)) {
-			throw new Fari_Exception('Missing Class: ' . $classFilePath . '.');
-		} else include($classFilePath); // include file
-	} catch (Fari_Exception $exception) { $exception->fire(); }
+        $classFilePath = BASEPATH . '/fari/' . $className[0] . '/' . implode('', $className) . EXT;
+    }
+    
+    try {
+        // check that model class exists
+        if (!file_exists($classFilePath)) {
+            throw new Fari_Exception('Missing Class: ' . $classFilePath . '.');
+        } else include($classFilePath); // include file
+    } catch (Fari_Exception $exception) { $exception->fire(); }
 }
 
 

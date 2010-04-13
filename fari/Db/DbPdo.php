@@ -17,9 +17,9 @@
  * @copyright Copyright (c) 2008, 2010 Radek Stepan
  * @package   Fari Framework\Db
  */
-class Fari_Db {
+class Fari_DbPdo {
 
-    /** @var Fari_DbConnection PDO wrapper */
+    /** @var PDO connection */
 	private static $dbConnection;
 
 	private function __construct() { }
@@ -31,7 +31,7 @@ class Fari_Db {
 	 */
 	public static function getConnection() {
 		// do we have an instance already?
-		if (!self::$dbConnection instanceof Fari_DbConnection) {
+		if (!self::$dbConnection instanceof PDO) {
             try {
                 // which driver are we using?
 				switch (strtolower(DB_DRIVER)) {
@@ -61,13 +61,13 @@ class Fari_Db {
 						$pdoInstance = new PDO('sqlite2:' . BASEPATH . '/' . DB_NAME);
 						break;
 				}
-
+                
 				// error mode on, throw exceptions
 				$pdoInstance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                 // create Fari_DbConnection using the PDO instance
-                self::$dbConnection = new Fari_DbConnection($pdoInstance);
-
+                self::$dbConnection = $pdoInstance;
+                
             } catch (PDOException $exception) {
                 try {
                     throw new Fari_Exception('Cannot connect to DB: ' . $exception->getMessage() . '.');

@@ -2,14 +2,20 @@
 
 
 
-class Albums extends Fari_ApplicationModel {
+class Albums {
+
+    private $albums;
+
+    public function __construct() {
+        $this->albums = new Table('albums');
+    }
 
     function getAll() {
-        return $this->db->select('albums', 'id, artist, title');
+        return $this->albums->findAll();
     }
 
     function get($albumId) {
-        return $this->db->selectRow('albums', 'id, artist, title', array('id' => $albumId));
+        return $this->albums->findFirst()->where(array('id' => $albumId));
     }
 
     function isAlbum($albumId) {
@@ -18,19 +24,25 @@ class Albums extends Fari_ApplicationModel {
     }
 
     function add($artist, $title) {
-        $this->db->insert('albums', array('artist' => $artist, 'title' => $title));
+        $this->albums->artist = $artist;
+        $this->albums->title = $title;
+
+        $this->albums->add();
         
         Fari_Message::success('Album has been saved.');
     }
 
     function edit($albumId, $artist, $title) {
-        $this->db->update('albums', array('artist' => $artist, 'title' => $title), array('id' => $albumId));
+        $this->albums->artist = $artist;
+        $this->albums->title = $title;
+
+        $this->albums->update()->where(array('id' => $albumId));
 
         Fari_Message::success('Album has been edited.');
     }
 
     function delete($albumId) {
-        $this->db->delete('albums', array('id' => $albumId));
+        $this->albums->remove()->where(array('id' => $albumId));
 
         Fari_Message::success('Album has been deleted.');
     }

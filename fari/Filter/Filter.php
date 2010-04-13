@@ -70,4 +70,13 @@ class Fari_Filter {
 		return checkdate($month, $day, $year);
 	}
 	
+    /**
+     * Will make a check if input string contains alphanumeric chars only.
+     * @param string $input
+     * @return boolean TRUE if input is alphanumeric
+     */
+    public static function isAlpha($input) {
+        return ($input === preg_replace("/[^a-zA-Z0-9\s]/", "", $input));
+    }
+
 }
