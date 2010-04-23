@@ -68,13 +68,13 @@ class Fari_Message {
 	 */
 	private static function setMessage(array $message, $messagesPointer=0) {
 		// if a message is already set at this pointer...
-		if (isset($_SESSION[self::SESSION_STORAGE . $messagesPointer])) {
+		if (isset($_SESSION[self::SESSION_STORAGE . APP_SALT . '\\' . $messagesPointer])) {
 			// set in the next available slot
 			$messagesPointer++;
 			self::setMessage($message, $messagesPointer);
 		} else {
 			// save message
-			$_SESSION[self::SESSION_STORAGE . $messagesPointer] = $message;
+			$_SESSION[self::SESSION_STORAGE . APP_SALT . '\\' . $messagesPointer] = $message;
 			return;
 		}
 	}
@@ -89,7 +89,7 @@ class Fari_Message {
 		// traverse the whole session looking for messages
 		foreach ($_SESSION as $key => $value) {
 			// our messages
-			if (strstr($key, self::SESSION_STORAGE)) {
+			if (strstr($key, self::SESSION_STORAGE . APP_SALT)) {
 				// 'save' message to the array
 				array_push($messages, $value);
 				// 'delete' the message

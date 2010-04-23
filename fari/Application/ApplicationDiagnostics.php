@@ -98,25 +98,23 @@ class Fari_ApplicationDiagnostics {
 	 * Dumps variables into the view.
 	 */
     public static function dump($mixed, $title='Variable Dump') {
+        // we are working in HTML context
+        $mixed = Fari_Escape::html($mixed);
+        if ($mixed == NULL) $mixed = '<em>NULL</em>';
+        else if (empty($mixed)) $mixed = '<em>empty</em>';
+        else $mixed = print_r($mixed, TRUE);
         ?>
-        <html>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
         <head>
-            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
             <title><?php echo $title; ?></title>
-            <style type="text/css">
-                body{background:#FFF;color:#33393c;font:12px/1.5 "Trebuchet MS", "Geneva CE", lucida, sans-serif;
-                     margin:0px;}
-                #message{background:#FFFFCC;color:#000;font-weight:bold;padding:5px 30px 10px 30px;
-                      font-size:100%;margin:0px;border-bottom:1px solid #DDD;}
-                    h1{margin-bottom:0px;font-weight:normal;font-size:175%;}
-                #dump{background-color:#F5F5F5;margin:10px 30px 0px 30px;padding:5px; border:1px solid #DDD;}
-            </style>
+            <?php self::css();  ?>
         </head>
 
         <body>
+            <div id="title"><b><?php echo FARI; ?></b> running <b><?php echo APP_VERSION; ?></b></div>
             <div id="message"><h1><?php echo $title; ?></h1></div>
-            <div id="dump"><pre><?php print_r($mixed); ?></pre></div>
-            <div id="dump"><b><?php echo FARI; ?></b> running <b><?php echo APP_VERSION; ?></b></div>
+            <div id="box"><pre><?php echo $mixed; ?></pre></div>
             </body>
             </html>
         <?php
@@ -168,9 +166,6 @@ class Fari_ApplicationDiagnostics {
 		// show declared classes
 		self::showDeclaredClasses();
 		
-		// output information about the application and framework version
-		echo '<div id="file"><b>' . FARI . '</b> running <b>' . APP_VERSION . '</b></div>';
-		
 		// close the whole page properly
 		echo '</body></html>';
 		
@@ -183,38 +178,15 @@ class Fari_ApplicationDiagnostics {
      */
 	private static function showHeader() {
 	?>
-		<html>
-		<head>
-			<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+        <head>
 			<title>Fari Diagnostics</title>
-			<style type="text/css">
-				body{background:#fff;color:#33393c;font:12px/1.5 "Trebuchet MS", "Geneva CE", lucida, sans-serif;margin:0px;}
-				#message,.error{background-color:#FF0000;color:#fff;font-weight:bold;padding:1px 0px 1px 0px;font-size:100%;margin:0px;}
-				#message{padding:5px 30px 10px 30px;}
-					h1{margin-bottom:0px;font-weight:normal;font-size:175%;}
-				#file{background-color:#F5F5F5;margin:10px 30px 0px 30px;padding:5px;
-				border:1px solid #999999;}
-				.code{background-color:#FFFFCC;padding:5px;border:1px solid #FFCC00;margin:10px 30px 10px 30px;}
-					i{color:#999999;}
-					.num{color:#9E9E7E;font-style:normal;font-weight:normal;}
-					span.err{color:#FFF;}
-				a{color:#4197E3;}
-				table{font:16px/1.5 "Trebuchet MS", "Geneva CE", lucida, sans-serif;font-size:100%;}
-					td{padding-right:20px;}
-			</style>
-			<script type="text/javascript">
-			<!--
-				function toggle(id) {
-				var e = document.getElementById(id);
-				if(e.style.display == 'block')
-					e.style.display = 'none';
-				else
-					e.style.display = 'block';
-				}
-			//-->
-			</script>
+            <?php self::css();  ?>
+			<?php self::jsToggle();  ?>
 		</head>
 		<body>
+            <div id="title"><b><?php echo FARI; ?></b> running <b><?php echo APP_VERSION; ?></b></div>
 	<?php
 	}
 
@@ -289,7 +261,7 @@ class Fari_ApplicationDiagnostics {
 	 */
 	private static function showErrorTrace(array $errorTrace) {
 		// header
-		echo '<div id="file"><b>Trace:</b>';
+		echo '<div id="box"><b>Trace:</b>';
 		// start the counter, we are humans so from 1
 		$counter = 1;
 		// traverse the array
@@ -321,7 +293,7 @@ class Fari_ApplicationDiagnostics {
 		$pointer = array_search('Fari_Exception', $declaredClasses) - 1;
 		
 		// header
-		echo '<div id="file"><b>Declared Classes:</b><table>';
+		echo '<div id="box"><b>Declared Classes:</b><table>';
 		// go through the array...
 		$classCount = count($declaredClasses);
 		while ($pointer++ < $classCount) {
@@ -346,25 +318,67 @@ class Fari_ApplicationDiagnostics {
 	 * @param string $errorMessage Message Thrown
 	 */
 	public static function productionMessage($errorMessage) {
-		// 'build' the header and show an apologetic message
-		self::showHeader();
 	?>
-		<div class="code" style="width:600px;margin:0 auto;margin-top:100px;">
-		
-		<!-- error message in English -->
-		<h1>We are sorry...</h1><p><b><?php echo $errorMessage ;?></b>.<br />You would help us if you told
-		us what were you doing at the time the error happened, we can then locate and fix the problem as
-		soon as possible. Again, we are sorry for the inconvenience.</p>
-		
-		<!-- error message in Czech -->
-		<h1>Omlouváme se...</h1><p><?php echo $errorMessage ;?></b>.<br />Pomohli byste nám kdybyste nám dali
-		vědět co jste dělali když se tato chyba stala. Můžeme tak najít a opravit tuto chybu co nejrychleji
-		. Znovu bychom se Vám rádi omluvili za tuto nepříjemnost.</p>
-		
-		</div></body></html>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+        <head>
+            <title><?php echo APP_VERSION; ?> Error</title>
+            <?php echo self::productionCSS(); ?>
+        </head>
+        <body>
+            <div id="modal">
+                <h1>We are sorry...</h1>
+                <p>You would help us if you told us what were you doing at the time the error happened, we can
+                    then locate and fix the problem as soon as possible. Again, we are sorry for the
+                    inconvenience.</p>
+                <hr />
+                <p><a href="javascript:history.go(-1)">Go back a page</a></p>
+            </div>
+        </body>
+        </html>
 	<?php
 		// end the misery
 		die();
 	}
+
+
+
+    /********************* templates, css, javascript *********************/
+
+
+    private static function productionCSS() {
+    ?>
+         <style type="text/css">
+        body{background:#e5e5e5;font-family:"Lucida Grande", verdana, arial, helvetica, sans-serif;font-size:12px;
+        color:#333;margin:0 auto;padding:0;}#modal{width:610px;background:#FFF;border:10px solid #CCC;
+        margin:28px auto 0;padding:6px 20px 0;}#modal h1{color:#C00;font-size:20px;margin:13px 0;}
+        #modal p{line-height:16px;margin:12px 0;}#modal span{color:#666;}
+        </style>
+    <?php }
+
+    private static function css() {
+    ?>
+         <style type="text/css">
+        body{background:#fff;color:#33393c;font:12px/1.5 "Trebuchet MS", "Geneva CE", lucida,sans-serif;
+        margin:0;}#title{background:#222;color:#565656;border-bottom:1px solid #C52F24;margin:0 auto;
+        padding:10px 30px;}#message,.error{background-color:#C52F24;color:#fff;font-weight:700;
+        font-size:100%;margin:0;padding:1px 0;}#message{border-top:1px solid #980905;padding:5px 30px 10px;}
+        h1{margin-bottom:0;font-weight:400;font-size:175%;}#box{background-color:#EEE;border:1px solid #ADAEAF;
+        margin:10px 30px 0;padding:5px;}#file{background-color:#D5E9F6;border:1px solid #8FCDF6;
+        color:#234A69;margin:10px 30px 0;padding:5px;}.code{background-color:#FFF9D8;border:1px solid #FECA51;
+        margin:10px 30px;padding:5px;}i{color:#999;}.num{color:#9E9E7E;font-style:normal;font-weight:400;}
+        a{color:#980905;}table{font:16px/1.5 "Trebuchet MS", "Geneva CE", lucida, sans-serif;font-size:100%;}
+        td{padding-right:20px;}#title b,span.err{color:#FFF;}
+        </style>
+     <?php }
+
+    private static function jsToggle() {
+    ?>
+        <script type="text/javascript">
+        function toggle(id){var e=document.getElementById(id);
+         if(e.style.display=='block')e.style.display='none';else e.style.display='block'}
+       </script>
+     <?php }
+
 
 }

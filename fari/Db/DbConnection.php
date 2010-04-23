@@ -62,7 +62,7 @@ class Fari_DbConnection {
             // add ordering and limit clauses
             if (isset($order)) $sql .= ' ORDER BY ' . $order;
 			if (isset($limit)) $sql .= ' LIMIT ' . $limit;
-
+            
 			// prepare statement
             $statement = $this->connection->prepare($sql);
 
@@ -146,7 +146,7 @@ class Fari_DbConnection {
 		// form sql statement
 		try {
             $sql = 'INSERT INTO ' . $table . ' (' . $columns . ') VALUES (' . $valuesQuoted . ')';
-
+            
             // prepare statement
 			$statement = $this->connection->prepare($sql);
 
@@ -206,7 +206,7 @@ class Fari_DbConnection {
            if (is_array($where)) $statement = $this->bindParameters($where, $statement);
 
             if ($toString) $this->toString($statement->queryString, $values, $where);
-            else $statement->execute(); // execute query
+            else return $statement->execute(); // execute query
         } catch (PDOException $exception) {
             try {
                 throw new Fari_Exception('Cannot update ' . $table . ': ' . $exception->getMessage());
@@ -334,12 +334,12 @@ class Fari_DbConnection {
 		}
     }
 
-
+    
 
     /********************* helpers *********************/
 
 
-
+    
     /**
      * Take a value from subarray and use it as a key (e.g.: use on 'settings' arrays).
      * @param array $array Array with data
@@ -484,5 +484,5 @@ class Fari_DbConnection {
         // echo into the view
         Fari_ApplicationDiagnostics::dump($statement, 'Fari_Db Query String');
     }
-
+    
 }

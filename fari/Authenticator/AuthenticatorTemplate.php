@@ -20,7 +20,7 @@
 abstract class Fari_AuthenticatorTemplate {
 
    	/**#@+ cache files directory & extension */
-	const SESSION_CREDENTIALS_STORAGE = 'Fari\User\Credentials';
+	const SESSION_CREDENTIALS_STORAGE = 'Fari\User\Credentials\\';
     /**#@-*/
 
     /** @var string username to work with */
@@ -122,7 +122,7 @@ abstract class Fari_AuthenticatorTemplate {
 			// select a matching row from a resource
 			if ($this->matchUser()) {
                 // save user into a session
-                $_SESSION[self::SESSION_CREDENTIALS_STORAGE] = $this->credentialsString();
+                $_SESSION[self::SESSION_CREDENTIALS_STORAGE . APP_SALT] = $this->credentialsString();
                 // success
                 return $this->authenticateSuccess();
             }
@@ -136,7 +136,7 @@ abstract class Fari_AuthenticatorTemplate {
      * @param string $creedentialsString String to save into credentials session
      */
     public function forceAuthenticate($creedentialsString) {
-        $_SESSION[self::SESSION_CREDENTIALS_STORAGE] = $creedentialsString;
+        $_SESSION[self::SESSION_CREDENTIALS_STORAGE . APP_SALT] = $creedentialsString;
     }
 	
 	/**
@@ -162,7 +162,7 @@ abstract class Fari_AuthenticatorTemplate {
 	 * @return string Credentials stored during authentication
 	 */
 	public function getCredentials() {
-		return $_SESSION[self::SESSION_CREDENTIALS_STORAGE];
+		return $_SESSION[self::SESSION_CREDENTIALS_STORAGE . APP_SALT];
 	}
 
 
@@ -175,8 +175,8 @@ abstract class Fari_AuthenticatorTemplate {
 	 * Sign out user from the system.
 	 */
 	public function signOut() {
-		// sign out by destroying the session credentials
-		unset($_SESSION[self::SESSION_CREDENTIALS_STORAGE]);
+        // sign out by destroying the session credentials
+		unset($_SESSION[self::SESSION_CREDENTIALS_STORAGE . APP_SALT]);
 	}
 	
 }

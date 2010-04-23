@@ -22,11 +22,22 @@ class Fari_Escape {
 
 	/**
 	 * Use in HTML context.
-	 * @param string $input
+	 * @param mixed $input
 	 * @return string
 	 */
 	public static function html($input) {
-		return htmlspecialchars($input, ENT_QUOTES);
+        // escape array
+        if (is_array($input)) {
+            foreach ($input as &$value) $value = htmlspecialchars($value, ENT_QUOTES);
+        // escape string
+        } else if (is_object($input)) {
+            $input = htmlspecialchars(print_r($input, TRUE), ENT_QUOTES);
+        // escape a string
+        } else {
+            $input = htmlspecialchars($input, ENT_QUOTES);
+        }
+        
+        return $input;
 	}
 
 	/**

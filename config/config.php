@@ -19,8 +19,10 @@
 if (!defined('APP_DIR')) define('APP_DIR', 'application');
 // application version
 if (!defined('APP_VERSION')) define('APP_VERSION', 'Akrabat');
+// application salt to differentiate between Fari apps saving to a SESSION
+if (!defined('APP_SALT')) define('APP_SALT', '4336517919');
 // default presenter for the application (pages in a CMS)
-if (!defined('DEFAULT_PRESENTER')) define('DEFAULT_PRESENTER', 'albums');
+if (!defined('DEFAULT_PRESENTER')) define('DEFAULT_PRESENTER', 'Albums');
 // set to FALSE on live version of your application
 if (!defined('REPORT_ERR')) define('REPORT_ERR', TRUE);
 
@@ -40,6 +42,21 @@ if (!defined('DB_NAME')) define('DB_NAME', 'db/database.db');
 if (!defined('DB_USER')) define('DB_USER', '');
 // database password
 if (!defined('DB_PASS')) define('DB_PASS', '');
+
+
+
+/********************* email settings *********************/
+
+
+
+// SMTP hostname
+if (!defined('SMTP_HOST')) define('SMTP_HOST', 'ssl://smtp.gmail.com');
+// SMTP port
+if (!defined('SMTP_PORT')) define('SMTP_PORT', 465);
+// username
+if (!defined('SMTP_USERNAME')) define('SMTP_USERNAME', '');
+// password
+if (!defined('SMTP_PASSWORD')) define('SMTP_PASSWORD', '');
 
 
 

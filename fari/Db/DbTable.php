@@ -34,7 +34,7 @@ class Table {
 
     /** @var string private name of method to call from a where clause */
     private $method;
-
+    
     /** @var ordering and result set limit */
     private $order;
     private $limit;
@@ -48,7 +48,7 @@ class Table {
 	 */
     public function __construct($table=NULL) {
         // db connection
-        $this->db = Fari_DbPdo::getConnection();
+        $this->db = Fari_DbPdo::getConnection(); 
 
         // table name exists?
         if (isset($table)) {
@@ -94,9 +94,20 @@ class Table {
         try { if (!isset($this->method)) {
             throw new Fari_Exception('First specify the method you would like to execute, then the where clause.'); }
         } catch (Fari_Exception $exception) { $exception->fire(); }
-
+        
+        // method call
+        $result = $this->{$this->method}();
+        // if we are finding first result...
+        if (($this->limit == 1 && $this->method == '_find')) {
+            // set result internally (so we can easily update rows etc...)
+            $this->set($result);
+            // return a bag of values
+            $bag = new Fari_Bag();
+            $bag->set($result);
+            return $bag;
+        }
         // return the result from a method call
-        return $this->{$this->method}();
+        return $result;
     }
 
     /**
@@ -162,7 +173,7 @@ class Table {
      */
     public function update() {
         $this->method = '_update';
-
+        
         return $this;
     }
 
@@ -180,7 +191,7 @@ class Table {
      */
     public function count() {
         $this->method = '_count';
-
+        
         return $this;
     }
 
@@ -349,7 +360,7 @@ class Table {
 
             $this->join .= " JOIN {$table} ON {$this->table}.{$on}={$table}.{$on}";
         }
-
+        
         return $this;
     }
 
@@ -410,7 +421,7 @@ class Table {
         foreach ($this->data as $column => $value) {
             $statement->bindValue(":{$column}", $value, $this->valueType($value));
         }
-
+        
         return $statement;
     }
 
@@ -425,7 +436,7 @@ class Table {
             $result .= "{$column} {$this->findOperator($value)} :id{$i} AND ";
             $i++;
         }
-
+        
         return substr($result, 0, -5);
     }
 
@@ -441,11 +452,11 @@ class Table {
             if (strpos($value, '*') !== FALSE) $value = str_replace('*', '%', $value);
             // strip any operators and whitespace from the value
             $value = preg_replace('/[>|<|=|\s\s+]/', '', $value);
-
+            
             $statement->bindValue(":id{$i}", $value, $this->valueType($value));
             $i++;
         }
-
+        
         return $statement;
     }
 
@@ -492,5 +503,5 @@ class Table {
     private function clearData() {
         $this->data = array();
     }
-
+    
 }

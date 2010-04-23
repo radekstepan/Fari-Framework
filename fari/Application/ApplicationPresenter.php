@@ -18,7 +18,7 @@
  * @package   Fari Framework\Application
  */
 abstract class Fari_ApplicationPresenter {
-    
+
 	/** @var Fari_Bag of values to display in a view */
 	protected $bag;
 
@@ -30,7 +30,7 @@ abstract class Fari_ApplicationPresenter {
 
     /** @var enabled through renderCache() */
     private $cache = FALSE;
-	
+
 	/**
      * Set registry when new object gets instantiated and use classname when startup().
      * @param Fari_ApplicationRoute setup in the Request
@@ -42,9 +42,9 @@ abstract class Fari_ApplicationPresenter {
 
         // initialize a bag of values for our use
         $this->bag = new Fari_Bag();
-        
+
         // initialization function called before anything else if is defined
-		if (method_exists($this->request->getPresenter() . '_Presenter', startup)) $this->startup();
+		if (method_exists($this->request->getPresenter(), startup)) $this->startup();
 	}
 
 	/**
@@ -66,7 +66,7 @@ abstract class Fari_ApplicationPresenter {
 	 */
     function renderCache($viewName, $parameters=NULL) {
         $view = implode('/', $this->getViewPrefix($viewName));
-        
+
         // check if we can render the cached file, if not game as usual
         $this->cache = $this->response->renderCache($view, $parameters);
 
@@ -89,25 +89,30 @@ abstract class Fari_ApplicationPresenter {
      * @param string $viewName
      * @param mixed $parametres Parameters to pass to the function
      */
-    function render($viewName, $parameters=NULL) {
+    function render($viewName=NULL, $parameters=NULL) {
         // define view prefix and name
         $view = $this->getViewPrefix($viewName);
 
         // do we have a render function to call?
         // It is always called in our presenter!
-        if (method_exists($this->request->getPresenter() . '_Presenter', 'render' . $view['name'])) {
+        if (method_exists($this->request->getPresenter(), 'render' . $view['name'])) {
             // add the 'render' prefix to the view name
             $renderAction = 'render' . ucwords($view['name']);
 
             // reflect on the method
             $method = new Fari_ApplicationReflection(
-                $this->request->getPresenter() . '_Presenter', 'render' . $view['name']
+                $this->request->getPresenter(), 'render' . $view['name']
             );
-            
+
             // set parameters
             if ($method->hasParameters()) $method->setParameters(&$parameters);
             // call the render method
             $method->call($this);
+        }
+
+        // strip prefix Presenter suffix :)
+        if (($suffixStart = stripos($view['prefix'], 'Presenter')) !== FALSE) {
+            $view['prefix'] = substr($view['prefix'], 0, $suffixStart);
         }
 
         // render file through a view
@@ -132,13 +137,13 @@ abstract class Fari_ApplicationPresenter {
     function response($values, $type='html', $parameters=NULL) {
         // call the Response
         $this->response->response($values, strtolower($type), $parameters);
-        
+
         // we don't want any further code to be executed in the Presenter
         die();
     }
 
 
-    
+
     /********************* helpers *********************/
 
 
@@ -148,11 +153,17 @@ abstract class Fari_ApplicationPresenter {
      * @param string $viewName
      * @return array
      */
-    private function getViewPrefix($viewName) {
+    private function getViewPrefix($viewName=NULL) {
+        // if view is not specified get the action that was called...
+        if (!isset($viewName)) {
+            // ... and strip action prefix, then lowercase
+            $viewName = strtolower(substr($this->request->getAction(), 6));
+        }
+
         // get the prefix of the view if present
         if (($slash = stripos($viewName, '/')) !== FALSE) {
             // the prefix Presenter named directory where our view resides
-            $prefix = substr($viewName, 0, $slash);
+            $prefix = ucwords(substr($viewName, 0, $slash));
             // the actual name of the view we have requested
             $viewName = substr($viewName, $slash + 1);
         } else {

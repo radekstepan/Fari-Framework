@@ -61,13 +61,13 @@ class Fari_Db {
 						$pdoInstance = new PDO('sqlite2:' . BASEPATH . '/' . DB_NAME);
 						break;
 				}
-
+                
 				// error mode on, throw exceptions
 				$pdoInstance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                 // create Fari_DbConnection using the PDO instance
                 self::$dbConnection = new Fari_DbConnection($pdoInstance);
-
+                
             } catch (PDOException $exception) {
                 try {
                     throw new Fari_Exception('Cannot connect to DB: ' . $exception->getMessage() . '.');

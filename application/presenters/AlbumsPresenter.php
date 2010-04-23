@@ -2,7 +2,7 @@
 
 
 
-class Albums_Presenter extends Fari_ApplicationPresenter {
+class AlbumsPresenter extends Fari_ApplicationPresenter {
 
     /** @var Fari_AuthenticatorSimple */
     private $user;

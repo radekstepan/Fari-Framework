@@ -2,7 +2,7 @@
 
 
 
-class Auth_Presenter extends Fari_ApplicationPresenter {
+class AuthPresenter extends Fari_ApplicationPresenter {
 
     /** @var Fari_AuthenticatorSimple */
     private $user;

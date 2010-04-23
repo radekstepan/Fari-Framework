@@ -18,7 +18,7 @@ if (!isset($_SESSION)) session_start();
 
 // Step 1a: Define absolute environment values
 // set so that we can check if PHP pages have been accessed directly
-if (!defined('FARI')) define('FARI', 'Fari Framework 2.1.0 (Apr 13, 2010)');
+if (!defined('FARI')) define('FARI', 'Fari Framework 2.2.0.0 (Apr 20, 2010)');
 
 // get absolute pathname and define it as a constant (server install path)
 if (!defined('BASEPATH')) define('BASEPATH', dirname(__FILE__));
@@ -89,7 +89,17 @@ function __autoload($className) {
         if ($className == 'Table') {
             $classFilePath = BASEPATH . '/fari/Db/DbTable' . EXT;
         } else {
-            $classFilePath = BASEPATH . '/'. APP_DIR . '/models/' . strtolower($className) . EXT;
+            // explode the class name by camel case
+            $className = splitCamelCase($className);
+            // the first name in a class could be a folder name, is it?
+            if (is_dir(BASEPATH . '/'. APP_DIR . '/models/' . $className[0])) {
+                // it is, prefix the model with a directory name
+                $classFilePath = BASEPATH . '/'. APP_DIR . '/models/' . $className[0] . '/'
+                . implode('', $className) . EXT;
+            } else {
+                // nah, the 'default'
+                $classFilePath = BASEPATH . '/'. APP_DIR . '/models/' . implode($className) . EXT;
+            }
         }
     } else {
         // remove Fari_ and build path

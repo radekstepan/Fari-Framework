@@ -46,17 +46,19 @@ class Fari_ApplicationReflection {
 
 	/**
      * Set parameters for a future call.
-     * @param mixed $values
+     * @param $values array
 	 */
     public function setParameters($values) {
-        // $values could be a string and the fastest is to:
-        if (!is_array($values)) $values = array($values);
-
         // traverse the action's parameters
         $position = 0;
         foreach ($this->method->getParameters() as $parameter) {
             // traverse the array
-            $value = @$values[$position++];
+            if (is_array($values)) {
+                $value = @$values[$position++];
+            // a single parameter case
+            } else {
+                $value = ($position > 0) ? NULL : $values;
+            }
             // key 'name' => value 'is default available'
             $this->parameters[$parameter->getName()] = (isset($value)) ? $value : NULL;
         }
@@ -73,5 +75,5 @@ class Fari_ApplicationReflection {
             $this->method->invoke($classInstance);
         }
     }
-	
+
 }
