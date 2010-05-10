@@ -28,7 +28,7 @@ ini_set('display_errors', 0);
  * @return void
  */
 function shutdown() {
-    if ($error = error_get_last()) {
+    if (($error = error_get_last())) {
         extract($error);
         switch($type) {
             case E_ERROR:
@@ -98,11 +98,6 @@ class Fari_ApplicationDiagnostics {
 	 * Dumps variables into the view.
 	 */
     public static function dump($mixed, $title='Variable Dump') {
-        // we are working in HTML context
-        $mixed = Fari_Escape::html($mixed);
-        if ($mixed == NULL) $mixed = '<em>NULL</em>';
-        else if (empty($mixed)) $mixed = '<em>empty</em>';
-        else $mixed = print_r($mixed, TRUE);
         ?>
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
         <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -114,11 +109,26 @@ class Fari_ApplicationDiagnostics {
         <body>
             <div id="title"><b><?php echo FARI; ?></b> running <b><?php echo APP_VERSION; ?></b></div>
             <div id="message"><h1><?php echo $title; ?></h1></div>
-            <div id="box"><pre><?php echo $mixed; ?></pre></div>
+            <div id="box"><pre><?php echo self::formatVars($mixed); ?></pre></div>
             </body>
             </html>
         <?php
         die();
+    }
+
+    /**
+     * Format mixed variables for output
+     * @param <type> $mixed
+     * @return <type>
+     */
+    public static function formatVars($mixed) {
+        // we are working in HTML context
+        $mixed = Fari_Escape::html($mixed);
+        if ($mixed == NULL) $mixed = '<em>NULL</em>';
+        else if (empty($mixed)) $mixed = '<em>empty</em>';
+        else $mixed = print_r($mixed, TRUE);
+
+        return $mixed;
     }
 
 	/**
@@ -140,13 +150,6 @@ class Fari_ApplicationDiagnostics {
             && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             die("Fari Exception on line $line in \"$file\": $message");
         }
-
-		// set color of the highlighting
-		ini_set('highlight.string',	'#080');
-		ini_set('highlight.comment',	'#999; font-style: italic');
-		ini_set('highlight.default',	'#33393c');
-		ini_set('highlight.html',	'#06b');
-		ini_set('highlight.keyword',	'#d24; font-weight: bold');
 		
 		// 'build' the header
 		self::showHeader();
@@ -203,8 +206,15 @@ class Fari_ApplicationDiagnostics {
 	 * @param string $displayRange How many source code lines before and after error line to show
 	 * @param string $divId So that we can show/hide some source and then call it via js
 	 */
-	private static function showErrorSource($errorFile, $errorLine, $displayRange=6, $divId=0) {
-		// get the source code into a string
+	static function showErrorSource($errorFile, $errorLine, $displayRange=6, $divId=0) {
+        // set color of the highlighting
+		ini_set('highlight.string',	'#080');
+		ini_set('highlight.comment',	'#999; font-style: italic');
+		ini_set('highlight.default',	'#33393c');
+		ini_set('highlight.html',	'#06b');
+		ini_set('highlight.keyword',	'#d24; font-weight: bold');
+
+        // get the source code into a string
 		$sourceCode = highlight_file($errorFile, TRUE);
 		// split into an array so that we can extract lines
 		$sourceCode = explode('<br />', $sourceCode);
@@ -372,7 +382,7 @@ class Fari_ApplicationDiagnostics {
         </style>
      <?php }
 
-    private static function jsToggle() {
+    public static function jsToggle() {
     ?>
         <script type="text/javascript">
         function toggle(id){var e=document.getElementById(id);
