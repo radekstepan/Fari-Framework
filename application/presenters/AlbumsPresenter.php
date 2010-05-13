@@ -16,7 +16,7 @@ class AlbumsPresenter extends Fari_ApplicationPresenter {
 
 
 
-	public function startup() {
+	public function filterStartup() {
         $this->user = new Fari_AuthenticatorSimple();
         if (!$this->user->isAuthenticated()) {
             $this->response->redirect('/login/');
