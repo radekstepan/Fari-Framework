@@ -1,50 +1,19 @@
 <?php if (!defined('FARI')) die();
 
+/**
+ * Albums model, example of ORM.
+ *
+ * @package Application\Models\Albums
+ */
+class Albums extends Table {
 
+    /** @var string name of the db table */
+    public $table = 'albums';
 
-class Albums {
+    /** @var array validates the presence of column data */
+    public $validatesPresenceOf = array('artist', 'title');
 
-    private $albums;
-
-    public function __construct() {
-        $this->albums = new Table('albums');
-    }
-
-    function getAll() {
-        return $this->albums->findAll();
-    }
-
-    function get($albumId) {
-        return $this->albums->findFirst()->where(array('id' => $albumId));
-    }
-
-    function isAlbum($albumId) {
-        $result = $this->get($albumId);
-        return (!empty($result));
-    }
-
-    function add($artist, $title) {
-        $this->albums->artist = $artist;
-        $this->albums->title = $title;
-
-        $this->albums->add();
-        
-        Fari_Message::success('Album has been saved.');
-    }
-
-    function edit($albumId, $artist, $title) {
-        $this->albums->artist = $artist;
-        $this->albums->title = $title;
-
-        $this->albums->update()->where(array('id' => $albumId));
-
-        Fari_Message::success('Album has been edited.');
-    }
-
-    function delete($albumId) {
-        $this->albums->remove()->where(array('id' => $albumId));
-
-        Fari_Message::success('Album has been deleted.');
-    }
+    /** @var array validates the length of columns */
+    public $validatesLengthOf = array(array('artist' => 2));
 
 }

@@ -45,8 +45,11 @@ class Table {
     /** @var string join table string */
     private $join;
 
-    /** @Fari_DbSubject observer subject for logging */
+    /** @Fari_DbLogger observer subject for logging */
     private $logger;
+
+    /** @Fari_DbValidator observer subject for query validation */
+    private $validator;
 
     /**
 	 * Setup a database connection (to a table)
@@ -59,6 +62,8 @@ class Table {
         // table name exists?
         if (isset($table)) {
             $this->table = $table;
+        } else if (isset($this->table)) {
+            assert('!empty($this->table); // table name needs to be provided');
         } else {
             // are we using high enough version of PHP for late static binding?
             try { if (version_compare(phpversion(), '5.3.0', '<=') == TRUE) {
@@ -69,9 +74,20 @@ class Table {
             $this->table = get_called_class();
         }
 
-        // attach an observer
-        $this->logger = new Fari_DbSubject();
+        // attach observers
+        $this->logger = new Fari_DbLogger();
         $this->logger->attach(new Fari_ApplicationLogger());
+
+        // attach validator
+        $this->validator = $this->attachValidator();
+    }
+
+    /**
+     * Returns a validator object, return NULL to switch it off.
+     * @return Fari_DbTableValidator
+     */
+    private function attachValidator() {
+        return new Fari_DbTableValidator();
     }
 
     /**
@@ -97,12 +113,26 @@ class Table {
     //    return static::$method($criteria);
     //}
 
+
+
+    /********************* set values *********************/
+
+
+
     /**
      * Magic setter.
      * @param mixed $column in a table
      * @param mixed $value to save
      */
     public function __set($column, $value) {
+        // extract set prefix
+        try {
+            if (substr($column, 0, 3) !== 'set') {
+                throw new Fari_Exception("Prepend 'set' before the column name.");
+            } else $column = substr($column, 3);
+        } catch (Fari_Exception $exception) { $exception->fire(); }
+
+        // save
         $this->data[$column] = $value;
  	}
 
@@ -112,7 +142,12 @@ class Table {
      * @return Table, call with add()
      */
     public function set(array $values) {
-        foreach ($values as $key => $value) $this->$key = $value;
+        foreach ($values as $key => $value) {
+            // prepend set prefix
+            $key = 'set' . $key;
+            // set
+            $this->$key = $value;
+        }
 
         return $this;
     }
@@ -146,17 +181,22 @@ class Table {
         // method call
         $result = $this->{$this->method}();
         // if we are finding first result...
-        if (($this->limit == 1 && $this->method == '_find')) {
-            // set result internally (so we can easily update rows etc...)
-            $this->set($result);
-            // return a bag of values
-            $bag = new Fari_Bag();
-            $bag->set($result);
-            return $bag;
-        }
+        //if (($this->limit == 1 && $this->method == '_find')) {
+        //    // set result internally (so we can easily update rows etc...)
+        //    $this->set($result);
+        //    // return a bag of values
+        //    $bag = new Fari_Bag();
+        //    $bag->set($result);
+        //}
         // return the result from a method call
         return $result;
     }
+
+
+
+    /********************* columns select *********************/
+
+
 
     /**
      * Specify the columns we want to retrieve.
@@ -173,6 +213,12 @@ class Table {
         return $this;
     }
 
+
+
+    /********************* find queries *********************/
+
+
+
     /**
      * Find item(s) in a table.
      * @param string $order
@@ -180,6 +226,11 @@ class Table {
      * @return Table, need to define a where clause
      */
     public function find($order=NULL, $limit=NULL) {
+        if (isset($order)) {
+            assert("strpos(\$order, 'ASC') !== FALSE OR strpos(\$order, 'DESC'); // malformed ORDER clause");
+            assert("is_int(\$limit); // limit needs to be an integer");
+        }
+
         $this->order = $order;
         $this->limit = $limit;
         $this->method = '_find';
@@ -193,6 +244,10 @@ class Table {
      * @return Table, need to define a where clause
      */
     public function findFirst($order='id ASC') {
+        if (isset($order)) {
+            assert("strpos(\$order, 'ASC') !== FALSE OR strpos(\$order, 'DESC'); // malformed ORDER clause");
+        }
+        
         $this->order = $order;
         $this->limit = 1;
         $this->method = '_find';
@@ -206,6 +261,10 @@ class Table {
      * @return Table, need to define a where clause
      */
     public function findLast($order='id DESC') {
+        if (isset($order)) {
+            assert("strpos(\$order, 'ASC') !== FALSE OR strpos(\$order, 'DESC'); // malformed ORDER clause");
+        }
+        
         $this->order = $order;
         $this->limit = 1;
         $this->method = '_find';
@@ -220,10 +279,21 @@ class Table {
      * @return array result set
      */
     public function findAll($order=NULL, $limit=NULL) {
+        if (isset($order)) {
+            assert("strpos(\$order, 'ASC') !== FALSE OR strpos(\$order, 'DESC'); // malformed ORDER clause");
+            assert("is_int(\$limit); // limit needs to be an integer");
+        }
+        
         $this->order = $order;
         $this->limit = $limit;
         return $this->_find();
     }
+
+
+
+    /********************* remove queries *********************/
+
+
 
     /**
      * Remove item(s) from a table.
@@ -243,6 +313,12 @@ class Table {
         return $this->_remove();
     }
 
+
+
+    /********************* update queries *********************/
+
+
+
     /**
      * Update rows in a table.
      * @return Table, need to define a where clause
@@ -260,6 +336,12 @@ class Table {
     public function updateAll() {
         return $this->_update();
     }
+
+
+
+    /********************* counter queries *********************/
+
+
 
     /**
      * Count items in a table.
@@ -279,6 +361,21 @@ class Table {
         return $this->_count();
     }
 
+
+
+    /********************* insert queries *********************/
+
+
+
+    /**
+     * Insert data into a table.
+     * @param array $values optionally pass them directly instead of using set() first
+     * @return id of the inserted row
+     */
+    public function save(array $values=NULL) {
+        $this->add($values);
+    }
+
     /**
      * Insert data into a table.
      * @param array $values optionally pass them directly instead of using set() first
@@ -296,11 +393,11 @@ class Table {
         // bind data
         $statement = $this->bindData($statement);
 
-        // execute query
-        $statement->execute();
-
         // notify
         $this->logger->notify($this->toString($sql));
+
+        // execute query
+        $statement->execute();
 
         // reset the saved data
         $this->clearData();
@@ -308,6 +405,12 @@ class Table {
         // return id of the row
         return $this->db->lastInsertId();
     }
+
+
+
+    /********************* generic query *********************/
+
+
 
     /**
      * You can run a generic SQL SELECT query.
@@ -330,6 +433,12 @@ class Table {
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
+
+    /********************* internal *********************/
+
+
 
     /**
      * Find items in a table and return them.
@@ -543,13 +652,20 @@ class Table {
     }
 
     /**
-     * Bind data to a statement.
+     * Bind data to a statement and optionally run a validation.
      * @param <type> $statement
      * @return <type>
      */
     private function bindData($statement) {
         foreach ($this->data as $column => $value) {
             $statement->bindValue(":{$column}", $value, $this->valueType($value));
+        }
+
+        // is validator set?
+        // TODO: instanceof might change in the future!!
+        if ($this->validator instanceof Fari_DbTableValidator) {
+            // run validation on us
+            $this->validator->validate($this);
         }
         
         return $statement;

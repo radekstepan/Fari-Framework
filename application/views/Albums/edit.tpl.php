@@ -15,16 +15,20 @@
 <body>
 	<div id="content">
 		<h1>Edit an album</h1>
+        
+		<?php if (isset($messages)) foreach($messages as $message): ?>
+			<div class="flash <?php echo $message['status'] ;?>"><?php echo $message['message']; ?></div>
+		<?php endforeach ;?>
 
-		<form action="<?php url('/albums/edit/' . $album->id); ?>" method="post">
+		<form action="<?php url('/albums/edit/' . $album['id']); ?>" method="post">
 			<table>
 				<tr class="required">
 					<th><label class="required">Artist:</label></th>
-					<td><input type="text" class="text" name="artist" value="<?php echo $album->artist; ?>" /></td>
+					<td><input type="text" class="text" name="artist" value="<?php echo $album['artist']; ?>" /></td>
 				</tr>
 				<tr class="required">
 					<th><label class="required">Title:</label></th>
-					<td><input type="text" class="text" name="title" value="<?php echo $album->title; ?>" /></td>
+					<td><input type="text" class="text" name="title" value="<?php echo $album['title']; ?>" /></td>
 				</tr>
 				<tr>
 					<th>&nbsp;</th>

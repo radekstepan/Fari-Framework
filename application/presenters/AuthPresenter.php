@@ -1,7 +1,10 @@
 <?php if (!defined('FARI')) die();
 
-
-
+/**
+ * User authentication.
+ *
+ * @package   Application\Presenters
+ */
 class AuthPresenter extends Fari_ApplicationPresenter {
 
     /** @var Fari_AuthenticatorSimple */

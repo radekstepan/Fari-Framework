@@ -16,6 +16,10 @@
 	<div id="content">
 		<h1>Add an album</h1>
 
+        <?php if (isset($messages)) foreach($messages as $message): ?>
+			<div class="flash <?php echo $message['status'] ;?>"><?php echo $message['message']; ?></div>
+		<?php endforeach ;?>
+
 		<form action="<?php url('/albums/add/'); ?>" method="post">
 			<table>
 				<tr class="required">
