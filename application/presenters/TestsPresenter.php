@@ -13,10 +13,7 @@ class TestsPresenter extends Fari_ApplicationPresenter {
 
 
 
-	public function actionIndex($p) {
-        echo '<a href="' . url('/tests/unit', 0) . '">Unit testing</a><br />';
-        echo '<a href="' . url('/tests/contract', 0) . '">Contracts through assertions</a>';
-	}
+	public function actionIndex($p) { }
 
 	public function actionUnit($p) {
         $test = new Fari_TestUnit();

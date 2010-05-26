@@ -1,0 +1,25 @@
+<?php if (!defined('FARI')) die(); ?>
+<h1>My Albums</h1>
+
+<p>
+    <?php linkTo('albums/add', 'Add a new album'); ?>
+    <?php linkTo('logout', 'Logout'); ?>
+</p>
+
+<table class="grid">
+    <tr>
+        <th>Title</th>
+        <th>Artist</th>
+        <th>&nbsp;</th>
+    </tr>
+    <?php foreach ($albums as $album): ?>
+    <tr>
+        <td><?php echo $album['title']; ?></td>
+        <td><?php echo $album['artist']; ?></td>
+        <td>
+            <a href="<?php url('/albums/edit/' . $album['id']); ?>">Edit</a>
+            <a href="<?php url('/albums/delete/' . $album['id']); ?>">Delete</a>
+        </td>
+    </tr>
+    <?php endforeach; ?>
+</table>

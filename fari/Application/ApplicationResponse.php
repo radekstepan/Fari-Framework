@@ -17,7 +17,7 @@
  * @copyright Copyright (c) 2008, 2010 Radek Stepan
  * @package   Fari Framework\Application
  */
-class Fari_ApplicationResponse {
+final class Fari_ApplicationResponse {
 
     /** @var default response code */
     private $responseCode = '200';
@@ -75,44 +75,46 @@ class Fari_ApplicationResponse {
 
     /**
      * Response to the browser.
-     * @param mixed $values Values to output
-     * @param string $type HTML, JSON, download
-     * @param mixed $parameters Extra parametres
+     * @param mixed $data to output
+     * @param string $type text, download, json, xml
      */
-    function response($values, $type, $parameters) {
+    function response($data, $type) {
         try {
             // determine type of response
             switch ($type) {
-                // HTML
-                case 'html':
-                    // render using Fari_ApplicationView
-                    $this->renderView($values, $parameters);
+                // plain text
+                case 'text':
+                    $this->setContentType('text/html');
+                    assert('is_string($data); // you can only display a string');
+                    echo $data;
+                    break;
 
                 // file download
                 case 'download':
+                case 'file':
                     $this->setHeader('Cache-Control', 'public');
                     $this->setHeader('Content-Description', 'File Transfer');
 
-                    if (!isset($values['filename'])) $values['filename'] = 'file';
-                    $this->setHeader('Content-Disposition', 'attachment; filename=' . $values['filename']);
-                    $this->setContentType($values['mime']);
+                    if (!isset($data['filename'])) $data['filename'] = 'file';
+                    $this->setHeader('Content-Disposition', 'attachment; filename=' . $data['filename']);
+                    $this->setContentType($data['mime']);
 
                     // echo file data
-                    echo $values['data'];
+                    echo $data['data'];
                     break;
 
                 // JSON response
                 case 'json':
                     $this->setContentType('application/json');
                     // encode values
-                    echo json_encode($values);
+                    echo json_encode($data);
                     break;
 
                 // XML response
                 case 'xml':
                     $this->setContentType('text/xml');
                     // echo values
-                    echo $values;
+                    echo $data;
                     break;
 
                 default:
@@ -165,9 +167,9 @@ class Fari_ApplicationResponse {
 	 * Will redirect to a URL (/presenter/action). Works with both synchronous/asynchronous calls.
 	 * @param string $url URL to redirect to
 	 */
-	function redirect($url) {
+	function redirectTo($url) {
 		// add forward slash if not specified
-		if ($url[0] !== '/') $url .= '/';
+		if ($url[0] !== '/') $url = "/{$url}";
 
 		// is this an AJAX call?
 		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
@@ -180,5 +182,5 @@ class Fari_ApplicationResponse {
         // die to 'protect' the presenter calling us
         die();
 	}
-	
+
 }

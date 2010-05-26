@@ -70,26 +70,12 @@ function splitCamelCase($string) {
  * @param string $title Title of the output
  */
 function dump($mixed, $title='Variables Dump') {
-    Fari_ApplicationDiagnostics::dump($mixed, $title);
-}
-
-/**
- * Echo URL to the (cached) View.
- * @param string $link Controller/Action to call
- * @param boolean $echo echo output immediatelly?
- * @param boolean $domain prepend domain?
- */
-function url($link, $echo=TRUE, $domain=FALSE) {
-    // we want a full domain name
-    if ($domain) {
-        // assume we are either using HTTP or HTTPS
-        $url = ($_SERVER['HTTPS'] != 'on') ? 'http://' . $_SERVER['HTTP_HOST'] . WWW_DIR . '/' . $link :
-        'https://' . $_SERVER['HTTP_HOST'] . WWW_DIR . '/' . $link;
+    if (is_string($mixed) && substr($mixed, 0, 5) == '<?xml') {
+        // an XML dump
+        if (!headers_sent()) header('Content-Type:text/xml');
+        echo $mixed;
     } else {
-        // default link
-        $url = ($link[0] == '/') ? WWW_DIR . $link : WWW_DIR . '/' . $link;
+        // standard dump
+        Fari_ApplicationDiagnostics::dump($mixed, $title);
     }
-
-    // echo to the view or return as a string
-    if ($echo) echo $url; else return $url;
 }

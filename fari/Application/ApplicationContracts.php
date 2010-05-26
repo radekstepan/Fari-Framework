@@ -32,21 +32,17 @@ assert_options(ASSERT_CALLBACK, 'contractsCallback');
 function contractsCallback($file, $line, $message) {
         // parse the comment in the message
         if (($position = strpos($message, '//')) !== FALSE) {
-            // fix the position based on the start of comment
-            if (substr($message, $position + 2, 1) == " ") {
-                $position += 3;
-            } else {
-                $position += 2;
-            }
-
-            // capitalize the comment into a sentence
-            $title = ucfirst(substr($message, $position));
+            // get the comment, trim whitespace and capitalize
+            $title = ucfirst(trim(substr($message, $position + 2)));
             $message = '';
         } else {
             // don't bother and echo the assert statement
             $title = 'Contract Condition Failed';
             $message = "<br />$message";
         }
+
+        // cleanup output
+        ob_end_clean();
 
         ?>
             <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

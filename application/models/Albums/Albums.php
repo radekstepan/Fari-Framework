@@ -8,7 +8,7 @@
 class Albums extends Table {
 
     /** @var string name of the db table */
-    public $table = 'albums';
+    public $tableName = 'albums';
 
     /** @var array validates the presence of column data */
     public $validatesPresenceOf = array('artist', 'title');

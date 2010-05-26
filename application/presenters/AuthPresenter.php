@@ -20,28 +20,26 @@ class AuthPresenter extends Fari_ApplicationPresenter {
             
             $this->user = new Fari_AuthenticatorSimple();
 		    if ($this->user->authenticate($username, $password, $this->request->getPost('token'))) {
-                $this->response->redirect('/');
+                $this->redirectTo('/');
             } else {
-                Fari_Message::fail('Sorry, your username or password wasn\'t recognized');
+                $this->flashFail = 'Sorry, your username or password wasn\'t recognized';
             }
         }
 
-        Fari_Message::notify('Use \'admin\' for username and password.');
-        $this->bag->messages = Fari_Message::get();
+        $this->flashNotify = 'Use \'admin\' for username and password.';
         
 		// create token & display login form
 		$this->bag->token = Fari_FormToken::create();
-		$this->render('login');
+		$this->renderAction();
 	}
 
     public function actionLogout() {
         $this->user = new Fari_AuthenticatorSimple();
 		$this->user->signOut();
         
-        Fari_Message::success('You have been logged out');
-        Fari_Message::get();
+        $this->flashSuccess = 'You have been logged out';
         
-		$this->render('login');
+		$this->renderAction('login');
 	}
 
 }

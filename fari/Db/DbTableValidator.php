@@ -60,7 +60,7 @@ class Fari_DbTableValidator {
     private function validatePresenceOf(Table &$table) {
         assert('is_array($table->validatesPresenceOf); // needs to be an array');
         foreach ($table->validatesPresenceOf as $column) {
-            
+
             // exists?
             if (!array_key_exists($column, $table->data)
                 // not empty?
@@ -82,7 +82,7 @@ class Fari_DbTableValidator {
             $column = key($length);
             $length = end($length);
             assert('is_int($length); // needs to be an integer');
-            
+
             // exists?
             if (!array_key_exists($column, $table->data)
                 // not empty?
@@ -113,9 +113,11 @@ class Fari_DbTableValidator {
                 $result = $test->findFirst()->where(array($column => $table->data[$column]));
                 unset($test);
                 if (!empty($result)) {
+                    // we better have primary key defined
+                    assert('!empty($table->primaryKey); // primary key has to be defined');
                     // we might be editing 'us' thus check for ID... not perfect all!
-                    if (array_key_exists('id', $table->where)) {
-                        if ($table->where['id'] != $result['id']) {
+                    if (array_key_exists($table->primaryKey, $table->where)) {
+                        if ($table->where[$table->primaryKey] != $result[$table->primaryKey]) {
                             throw new TableException("'$column' value is not unique");
                         }
                     }
@@ -135,7 +137,7 @@ class Fari_DbTableValidator {
             assert('is_array($regex); // needs to be an array, column => regex');
             $column = key($regex);
             $regex = end($regex);
-            
+
             // exists?
             if (!array_key_exists($column, $table->data)) {
                 throw new TableException("'$column' column does not exist");
@@ -146,5 +148,5 @@ class Fari_DbTableValidator {
             }
         }
     }
-    
+
 }

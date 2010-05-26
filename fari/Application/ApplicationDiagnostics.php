@@ -36,9 +36,7 @@ function shutdown() {
             case E_COMPILE_ERROR:
             case E_USER_ERROR:
                 // show diagnostics display
-                if (REPORT_ERROR) Fari_ApplicationDiagnostics::display('PHP Error', $file, $line, $message.'.');
-                // show message on a production server
-                else Fari_ApplicationDiagnostics::productionMessage($message);
+                Fari_ApplicationDiagnostics::display('PHP Error', $file, $line, $message.'.');
                 break;
         }
     }
@@ -58,8 +56,8 @@ register_shutdown_function('shutdown');
  * @copyright Copyright (c) 2008, 2010 Radek Stepan
  * @package   Fari Framework
  */
-class Fari_Exception extends Exception {
-	
+final class Fari_Exception extends Exception {
+
 	/**
 	 * Fire up a display with error message, sourcecode and some trace.
 	 * @return void
@@ -74,10 +72,10 @@ class Fari_Exception extends Exception {
 		$message = $this->getMessage();
 		// trace of error
 		$trace = $this->getTrace();
-		
+
 		Fari_ApplicationDiagnostics::display('Fari Exception', $file, $line, $message, $trace);
 	}
-	
+
 }
 
 
@@ -92,27 +90,14 @@ class Fari_Exception extends Exception {
  * @copyright Copyright (c) 2008, 2010 Radek Stepan
  * @package   Fari Framework
  */
-class Fari_ApplicationDiagnostics {
+final class Fari_ApplicationDiagnostics {
 
 	/**
 	 * Dumps variables into the view.
 	 */
     public static function dump($mixed, $title='Variable Dump') {
-        ?>
-        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-        <head>
-            <title><?php echo $title; ?></title>
-            <?php self::css();  ?>
-        </head>
-
-        <body>
-            <div id="title"><b><?php echo FARI; ?></b> running <b><?php echo APP_VERSION; ?></b></div>
-            <div id="message"><h1><?php echo $title; ?></h1></div>
-            <div id="box"><pre><?php echo self::formatVars($mixed); ?></pre></div>
-            </body>
-            </html>
-        <?php
+        echo '<pre style=\'font-size:12px;font-family:"Trebuchet MS", sans-serif;color:#333;\'>'
+            . self::formatVars($mixed) . '</pre>';
         die();
     }
 
@@ -123,12 +108,57 @@ class Fari_ApplicationDiagnostics {
      */
     public static function formatVars($mixed) {
         // we are working in HTML context
-        $mixed = Fari_Escape::html($mixed);
-        if ($mixed == NULL) $mixed = '<em>NULL</em>';
+        //$mixed = Fari_Escape::html($mixed);
+        if ($mixed === NULL) $mixed = '<em>NULL</em>';
         else if (empty($mixed)) $mixed = '<em>empty</em>';
-        else $mixed = print_r($mixed, TRUE);
+        else if (is_string($mixed)) $mixed = Fari_Escape::html($mixed);
+        else {
+            ob_start();
+            var_dump($mixed);
+            $mixed = ob_get_contents();
+            ob_clean();
+
+            $mixed = explode("\n", $mixed);
+            foreach ($mixed as &$line) {
+                // how big is the whitespace on the left?
+                $padding = strlen($line) - strlen(ltrim($line));
+                // add extra padding for better readability
+                for ($i=0;$i<$padding;$i++) $line = "  " . $line;
+                // if our line contains a value give it extra pad
+                if (strpos($trimmed = ltrim($line), "[") !== FALSE) {
+                    // highlight array key
+                    $line = str_replace("[", "<strong>[", $line);
+                    $line = str_replace("]", "]</strong>", $line);
+                } else {
+                    if (substr(trim($line), 0) != "}") $line = "   " . $line;
+                }
+                $line = substr($line, 3);
+            }
+            $mixed = implode("\n", $mixed);
+        }
 
         return $mixed;
+    }
+
+    /**
+     * Recursively parse an array
+     * @param <type> $varname
+     * @param <type> $varval
+     * @param <type> $depth
+     */
+    private static function recursiveDump($varname, $varval, $depth) {
+        // padding
+        for ($i=0; $i<$depth; $i++) echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+
+        if (!is_array($varval)) {
+            echo $varname . ' = ' . var_export($varval, true) . ";<br>\n";
+        } else {
+            echo $varname . " = array();<br>\n";
+            foreach ($varval as $key => $val) {
+                $depth++;
+                self::recursiveDump($varname . "[" . var_export($key, true) . "]", $val, $depth);
+            }
+        }
     }
 
 	/**
@@ -141,7 +171,7 @@ class Fari_ApplicationDiagnostics {
 	public static function display($type, $file, $line, $message, $trace=NULL) {
 		// clean output
 		ob_end_clean();
-		
+
 		// are we on a production server?
         if (Fari_ApplicationEnvironment::isProduction()) self::productionMessage($message);
 
@@ -150,28 +180,28 @@ class Fari_ApplicationDiagnostics {
             && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             die("Fari Exception on line $line in \"$file\": $message");
         }
-		
+
 		// 'build' the header
 		self::showHeader();
-		
+
 		// output the message to the user
 		echo '<div id="message"><h1>' . $type . '</h1><br />' . $message . '</div>';
-		
+
 		// output information about the file
 		echo '<div id="file">File: <b>' . $file . '</b> Line: <b>' . $line . '</b></div>';
-		
+
 		// show the source
 		self::showErrorSource($file, $line);
-		
+
 		// show trace if present
 		if (!empty($trace)) self::showErrorTrace($trace);
-		
+
 		// show declared classes
 		self::showDeclaredClasses();
-		
+
 		// close the whole page properly
 		echo '</body></html>';
-		
+
 		// end the misery...
 		die();
 	}
@@ -218,16 +248,16 @@ class Fari_ApplicationDiagnostics {
 		$sourceCode = highlight_file($errorFile, TRUE);
 		// split into an array so that we can extract lines
 		$sourceCode = explode('<br />', $sourceCode);
-		
+
 		// where (which line) to start showing source code? (start at line 1 ;)
 		$beginLine = max(1, $errorLine - $displayRange);
 		// where to stop?
 		$endLine = min($errorLine + $displayRange, count($sourceCode));
-		
+
 		// open div with the error message
 		if ($divId != '0') echo '<div id="' . $divId . '" class="code" style="display:none;">';
 		else echo '<div id="' . $divId . '" class="code">';
-		
+
 		// highlighting might have started before we 'cut' it
 		// set pointer to the beginning of our output
 		$pointer = $beginLine;
@@ -243,7 +273,7 @@ class Fari_ApplicationDiagnostics {
 				break;
 			}
 		}
-		
+
 		// paint the code
 		// set pointer to the beginning of our output
 		$pointer = $beginLine-1;
@@ -260,11 +290,11 @@ class Fari_ApplicationDiagnostics {
 			// and output sourcecode line with delimiter
 			} else echo '<span class="num">' . $pointer . ':</span> &nbsp;&nbsp;&nbsp; ' . $line . "<br />\n";
 		}
-		
+
 		// close div
 		echo '</div>';
 	}
-	
+
 	/**
 	 * Build a trace display with sourcecodes and all.
 	 * @param array $errorTrace Contains an array with the trace as thrown
@@ -281,7 +311,7 @@ class Fari_ApplicationDiagnostics {
 			if (isset($file)) echo '<b>' . $counter . '.</b>&nbsp;&nbsp;' . $file;
 			if (isset($line)) echo '&nbsp;&nbsp;(' . $line . ')';
 			if (isset($function)) echo '&nbsp;&nbsp;' . $function . '()&nbsp;&nbsp;';
-			
+
 			// link to a javascript function that shows/hides the code listing
 			echo '<a href="" onclick="toggle(\'' . $counter . '\');return false;" >source</a>';
 			// add sourcecode listing
@@ -290,7 +320,7 @@ class Fari_ApplicationDiagnostics {
 		}
 		echo "\n</div>"; // close her up
 	}
-	
+
 	/**
 	 * Shows declared classes and their descriptions.
 	 * @return void
@@ -301,7 +331,7 @@ class Fari_ApplicationDiagnostics {
 		// show only application related classes, Fari_Exception is implemented if we can see this :)
 		// a pointer to start from
 		$pointer = array_search('Fari_Exception', $declaredClasses) - 1;
-		
+
 		// header
 		echo '<div id="box"><b>Declared Classes:</b><table>';
 		// go through the array...
@@ -311,18 +341,18 @@ class Fari_ApplicationDiagnostics {
 			$class = @$declaredClasses[$pointer];
 			// output it
 			echo "\n<tr><td>" . $class . '</td><td><i>';
-			
+
 			// get description if is implemented
                         @eval('if (method_exists($class, "_desc")) echo $class::_desc();');
                         // if (method_exists($class, '_desc')) echo $class::_desc(); // use from PHP 5.3.0
-			
+
 			// close description
 			echo '</i></td</tr>';
 		}
 		// close her up
 		echo '</table></div>';
 	}
-	
+
 	/**
 	 * Is called when we are on a production server and don't want to show the source code.
 	 * @param string $errorMessage Message Thrown
@@ -378,7 +408,7 @@ class Fari_ApplicationDiagnostics {
         color:#234A69;margin:10px 30px 0;padding:5px;}.code{background-color:#FFF9D8;border:1px solid #FECA51;
         margin:10px 30px;padding:5px;}i{color:#999;}.num{color:#9E9E7E;font-style:normal;font-weight:400;}
         a{color:#980905;}table{font:16px/1.5 "Trebuchet MS", "Geneva CE", lucida, sans-serif;font-size:100%;}
-        td{padding-right:20px;}#title b,span.err{color:#FFF;}
+        td{padding-right:20px;}#title b,span.err{color:#FFF;}#title.gray{border-bottom:#EEE;}
         </style>
      <?php }
 
