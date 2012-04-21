@@ -19,6 +19,8 @@ The API for the core framework is published on [GitHub Pages](http://radekstepan
 ### Model:
 
 ```php
+<?php
+
 class Albums extends Table {
 
   /** @var string name of the db table */
@@ -36,6 +38,8 @@ class Albums extends Table {
 ### Presenter:
 
 ```php
+<?php
+
 /** ... */
 
 public function actionAdd() {
