@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="generator" content="ApiGen 2.6.0" />
+
+	<title>Class Fari_AuthenticatorSimple | Fari Framework</title>
+
+	<script type="text/javascript" src="resources/combined.js?428767200"></script>
+	<script type="text/javascript" src="elementlist.js?2035504973"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="resources/style.css?2495970611" />
+	<link rel="search" type="application/opensearchdescription+xml" title="Fari Framework" href="/opensearch.xml" />
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', "UA-10607448-4"]);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+</head>
+
+<body>
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+			<h3>Packages</h3>
+			<ul>
+				<li class="active"><a href="package-Fari.html">Fari</a>
+						</li>
+				<li><a href="package-None.html">None</a>
+						</li>
+				<li><a href="package-PHP.html">PHP</a>
+						</li>
+			</ul>
+		</div>
+
+		<hr />
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-Fari_ApplicationDiagnostics.html">Fari_ApplicationDiagnostics</a></li>
+				<li><a href="class-Fari_ApplicationEnvironment.html">Fari_ApplicationEnvironment</a></li>
+				<li><a href="class-Fari_ApplicationI18n.html">Fari_ApplicationI18n</a></li>
+				<li><a href="class-Fari_ApplicationLogger.html">Fari_ApplicationLogger</a></li>
+				<li><a href="class-Fari_ApplicationLoggerSubject.html">Fari_ApplicationLoggerSubject</a></li>
+				<li><a href="class-Fari_ApplicationPresenter.html">Fari_ApplicationPresenter</a></li>
+				<li><a href="class-Fari_ApplicationPresenterHelpers.html">Fari_ApplicationPresenterHelpers</a></li>
+				<li><a href="class-Fari_ApplicationReflection.html">Fari_ApplicationReflection</a></li>
+				<li><a href="class-Fari_ApplicationRequest.html">Fari_ApplicationRequest</a></li>
+				<li><a href="class-Fari_ApplicationResponse.html">Fari_ApplicationResponse</a></li>
+				<li><a href="class-Fari_ApplicationRoute.html">Fari_ApplicationRoute</a></li>
+				<li><a href="class-Fari_ApplicationRouter.html">Fari_ApplicationRouter</a></li>
+				<li><a href="class-Fari_ApplicationView.html">Fari_ApplicationView</a></li>
+				<li><a href="class-Fari_ApplicationViewCache.html">Fari_ApplicationViewCache</a></li>
+				<li><a href="class-Fari_ApplicationViewHelper.html">Fari_ApplicationViewHelper</a></li>
+				<li class="active"><a href="class-Fari_AuthenticatorSimple.html">Fari_AuthenticatorSimple</a></li>
+				<li><a href="class-Fari_AuthenticatorTemplate.html">Fari_AuthenticatorTemplate</a></li>
+				<li><a href="class-Fari_BackupTable.html">Fari_BackupTable</a></li>
+				<li><a href="class-Fari_BackupTemplate.html">Fari_BackupTemplate</a></li>
+				<li><a href="class-Fari_Bag.html">Fari_Bag</a></li>
+				<li><a href="class-Fari_DbLogger.html">Fari_DbLogger</a></li>
+				<li><a href="class-Fari_DbPdo.html">Fari_DbPdo</a></li>
+				<li><a href="class-Fari_DbSubject.html">Fari_DbSubject</a></li>
+				<li><a href="class-Fari_DbTableRelationships.html">Fari_DbTableRelationships</a></li>
+				<li><a href="class-Fari_DbTableValidator.html">Fari_DbTableValidator</a></li>
+				<li><a href="class-Fari_Decode.html">Fari_Decode</a></li>
+				<li><a href="class-Fari_Escape.html">Fari_Escape</a></li>
+				<li><a href="class-Fari_FeedAtom.html">Fari_FeedAtom</a></li>
+				<li><a href="class-Fari_File.html">Fari_File</a></li>
+				<li><a href="class-Fari_FileYaml.html">Fari_FileYaml</a></li>
+				<li><a href="class-Fari_Filter.html">Fari_Filter</a></li>
+				<li><a href="class-Fari_Format.html">Fari_Format</a></li>
+				<li><a href="class-Fari_FormToken.html">Fari_FormToken</a></li>
+				<li><a href="class-Fari_Mail.html">Fari_Mail</a></li>
+				<li><a href="class-Fari_MailPear.html">Fari_MailPear</a></li>
+				<li><a href="class-Fari_MailPhp.html">Fari_MailPhp</a></li>
+				<li><a href="class-Fari_MailSmtp.html">Fari_MailSmtp</a></li>
+				<li><a href="class-Fari_TestUnit.html">Fari_TestUnit</a></li>
+				<li><a href="class-Fari_Tools.html">Fari_Tools</a></li>
+				<li><a href="class-Fari_ToolsBenchmark.html">Fari_ToolsBenchmark</a></li>
+				<li><a href="class-Table.html">Table</a></li>
+			</ul>
+
+
+
+			<h3>Exceptions</h3>
+			<ul>
+				<li><a href="class-Fari_Exception.html">Fari_Exception</a></li>
+				<li><a href="class-FileNotFoundException.html">FileNotFoundException</a></li>
+				<li><a href="class-TableException.html">TableException</a></li>
+			</ul>
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form action="http://www.google.com/cse" id="search">
+		<input type="hidden" name="cx" value="003517389015876838664:fhzsqxwsggg" />
+		<input type="hidden" name="ie" value="UTF-8" />
+		<input type="text" name="q" class="text" />
+		<input type="submit" value="Search" />
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li>
+				<a href="package-Fari.html" title="Summary of Fari"><span>Package</span></a>
+			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+			<li>
+				<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+			</li>
+		</ul>
+		<ul>
+			<li>
+				<a href="fari-framework-api-documentation.zip" title="Download documentation as ZIP archive"><span>Download</span></a>
+			</li>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class Fari_AuthenticatorSimple</h1>
+
+
+	<div class="description">
+	
+<p>A simple implementation of AuthenticatorTemplate.</p>
+
+	</div>
+
+	<dl class="tree">
+		<dd style="padding-left:0px">
+			<a href="class-Fari_AuthenticatorTemplate.html"><span>Fari_AuthenticatorTemplate</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:30px">
+			<img src="resources/inherit.png" alt="Extended by" />
+<b><span>Fari_AuthenticatorSimple</span></b>			
+			
+			
+		</dd>
+	</dl>
+
+
+
+
+
+
+
+
+	<div class="info">
+		
+		
+		
+		<b>Package:</b> <a href="package-Fari.html">Fari</a><br />
+
+				<b>Copyright:</b>
+				Copyright (c) 2008, 2010 Radek Stepan<br />
+		<b>Located at</b> <a href="source-class-Fari_AuthenticatorSimple.html#14" title="Go to source code">Authenticator/AuthenticatorSimple.php</a><br />
+	</div>
+
+
+	<table class="summary" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="__construct" id="___construct">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___construct">#</a>
+		<code><a href="source-class-Fari_AuthenticatorSimple.html#31" title="Go to source code">__construct</a>( <span>mixed <var>$table</var> = <span class="php-quote">'users'</span></span> )</code>
+
+		<div class="description short">
+			
+<p>Setup database connection.</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Setup database connection.</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$table</var></dt>
+					<dd><code>mixed</code></dd>
+				</dl></div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="prepareUsername" id="_prepareUsername">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_prepareUsername">#</a>
+		<code><a href="source-class-Fari_AuthenticatorSimple.html#51" title="Go to source code">prepareUsername</a>( <span>string <var>$username</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Escape username.</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Escape username.</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$username</var></dt>
+					<dd><code>string</code></dd>
+				</dl></div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="preparePassword" id="_preparePassword">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_preparePassword">#</a>
+		<code><a href="source-class-Fari_AuthenticatorSimple.html#59" title="Go to source code">preparePassword</a>( <span>string <var>$password</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Escape password.</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Escape password.</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$password</var></dt>
+					<dd><code>string</code></dd>
+				</dl></div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="prepareSession" id="_prepareSession">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_prepareSession">#</a>
+		<code><a href="source-class-Fari_AuthenticatorSimple.html#68" title="Go to source code">prepareSession</a>( <span>string <var>$sessionString</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Escape SESSION data.</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Escape SESSION data.</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$sessionString</var></dt>
+					<dd><code>string</code></dd>
+				</dl></div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="matchUser" id="_matchUser">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_matchUser">#</a>
+		<code><a href="source-class-Fari_AuthenticatorSimple.html#82" title="Go to source code">matchUser</a>( )</code>
+
+		<div class="description short">
+			
+<p>Match credentials with a db table 'users'.</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Match credentials with a db table 'users'.</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br>TRUE if we have a match<br />
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="matchSessionCredentials" id="_matchSessionCredentials">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_matchSessionCredentials">#</a>
+		<code><a href="source-class-Fari_AuthenticatorSimple.html#98" title="Go to source code">matchSessionCredentials</a>( <span>string <var>$credentialsString</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Match SESSION with a resource of users.</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Match SESSION with a resource of users.</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$credentialsString</var></dt>
+					<dd><code>string</code></dd>
+				</dl></div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="validateToken" id="_validateToken">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_validateToken">#</a>
+		<code><a href="source-class-Fari_AuthenticatorSimple.html#110" title="Go to source code">validateToken</a>( <span>mixed <var>$token</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Validate token data through Fari_FormToken.</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Validate token data through Fari_FormToken.</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$token</var></dt>
+					<dd><code>mixed</code></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br>TRUE on success<br />
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="credentialsString" id="_credentialsString">
+
+		<td class="attributes"><code>
+			 public 
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_credentialsString">#</a>
+		<code><a href="source-class-Fari_AuthenticatorSimple.html#119" title="Go to source code">credentialsString</a>( )</code>
+
+		<div class="description short">
+			
+<p>Build a credentials string.</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Build a credentials string.</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>string</code><br />
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="authenticateSuccess" id="_authenticateSuccess">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_authenticateSuccess">#</a>
+		<code><a href="source-class-Fari_AuthenticatorSimple.html#133" title="Go to source code">authenticateSuccess</a>( )</code>
+
+		<div class="description short">
+			
+<p>Succesfull authentication.</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Succesfull authentication.</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br>TRUE<br />
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="authenticateFail" id="_authenticateFail">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_authenticateFail">#</a>
+		<code><a href="source-class-Fari_AuthenticatorSimple.html#141" title="Go to source code">authenticateFail</a>( )</code>
+
+		<div class="description short">
+			
+<p>Failed authentication.</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Failed authentication.</p>
+
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br>TRUE<br />
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+	<table class="summary inherited">
+	<caption>Methods inherited from <a href="class-Fari_AuthenticatorTemplate.html#methods">Fari_AuthenticatorTemplate</a></caption>
+	<tr>
+		<td><code>
+			<a href="class-Fari_AuthenticatorTemplate.html#_authenticate">authenticate()</a>, 
+			<a href="class-Fari_AuthenticatorTemplate.html#_forceAuthenticate">forceAuthenticate()</a>, 
+			<a href="class-Fari_AuthenticatorTemplate.html#_getCredentials">getCredentials()</a>, 
+			<a href="class-Fari_AuthenticatorTemplate.html#_isAuthenticated">isAuthenticated()</a>, 
+			<a href="class-Fari_AuthenticatorTemplate.html#_signOut">signOut()</a>
+		</code></td>
+	</tr>
+	</table>
+
+
+
+
+	<table class="summary inherited">
+	<caption>Constants inherited from <a href="class-Fari_AuthenticatorTemplate.html#constants">Fari_AuthenticatorTemplate</a></caption>
+	<tr>
+		<td><code>
+			<a href="class-Fari_AuthenticatorTemplate.html#SESSION_CREDENTIALS_STORAGE"><b>SESSION_CREDENTIALS_STORAGE</b></a>
+		</code></td>
+	</tr>
+	</table>
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		Fari Framework API documentation generated by <a href="http://apigen.org">ApiGen 2.6.0</a>
+	</div>
+</div>
+</div>
+</body>
+</html>
