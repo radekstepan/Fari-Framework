@@ -10,6 +10,10 @@ The extremely well-commented source code puts Fari Framework among the best 10% 
 
 This project started out as a backend for a CMS developed as part of a BSc. dissertation project. It has later been improved when porting 37Signals' Camfire into PHP.
 
+### Documentation:
+
+The API for the core framework is published on (GitHub Pages)[http://radekstepan.github.com/Fari-Framework/package-Fari.html].
+
 ## Examples:
 
 ### Model:
