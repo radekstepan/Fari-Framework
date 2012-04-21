@@ -12,7 +12,7 @@ This project started out as a backend for a CMS developed as part of a BSc. diss
 
 ### Documentation:
 
-The API for the core framework is published on (GitHub Pages)[http://radekstepan.github.com/Fari-Framework/package-Fari.html].
+The API for the core framework is published on [GitHub Pages](http://radekstepan.github.com/Fari-Framework/package-Fari.html).
 
 ## Examples:
 
