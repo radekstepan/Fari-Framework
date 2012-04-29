@@ -8,7 +8,7 @@ The extremely well-commented source code puts Fari Framework among the best 10% 
 
 ## History:
 
-This project started out as a backend for a CMS developed as part of a BSc. dissertation project. It has later been improved when porting 37Signals' Camfire into PHP.
+This project started out as a backend for a CMS developed as part of a BSc. dissertation project. It has later been improved when porting 37Signals' Campfire into PHP.
 
 ### Documentation:
 
