@@ -2,7 +2,7 @@
 
 A lean PHP Model-View-Presenter Framework
 
-## About:
+![image](https://github.com/radekstepan/Fari-Framework/raw/master/example.png)
 
 The core framework is very lean (596 lines of code) but still features a loosely coupled template for your projects, automatically filtering user input from forms, providing user authentication, database abstraction layer with field validation, design by contracts, unit testing and showing highlighted syntax in diagnostics class when things go wrong.
 
